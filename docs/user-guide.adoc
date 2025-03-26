@@ -190,32 +190,89 @@ When moving multiple points, the first selected point will snap to the grid, and
 |===
 |Shortcut |Function
 
+|*Navigation*
+|
+
+|kbd:[Arrow Keys]
+|Pan the canvas by grid size
+
+|kbd:[Shift] + Arrow Keys
+|Pan the canvas by 10x grid size
+
+|kbd:[Alt] + Arrow Keys
+|Pan the canvas precisely by 1 unit
+
+|kbd:[Ctrl] + kbd:[+]
+|Zoom in
+
+|kbd:[Ctrl] + kbd:[-]
+|Zoom out
+
+|kbd:[Ctrl] + kbd:[Shift] + kbd:[+]
+|Zoom in with larger steps
+
+|kbd:[Ctrl] + kbd:[Alt] + kbd:[+]
+|Zoom in with smaller steps
+
+|kbd:[Ctrl] + kbd:[0]
+|Reset zoom to 100%
+
+|kbd:[Ctrl] + kbd:[F]
+|Fit diagram to view
+
+|kbd:[Space]
+|Temporarily activate pan mode (hold)
+
+|*Selection & Control*
+|
+
 |kbd:[Ctrl] + Click
 |Select a point
 
 |kbd:[Ctrl] + Drag
 |Select multiple points within a rectangle
 
+|kbd:[Esc]
+|Clear selection or close active tooltip
+
+|kbd:[Ctrl] + kbd:[A]
+|Select all objects
+
+|*Object Movement*
+|
+
+|kbd:[Ctrl] + Arrow Keys
+|Move selected objects by grid size
+
+|kbd:[Ctrl] + kbd:[Shift] + Arrow Keys
+|Move selected objects by 10x grid size
+
+|kbd:[Ctrl] + kbd:[Alt] + Arrow Keys
+|Move selected objects precisely by 1 unit
+
 |kbd:[Alt] + Drag
 |Move selected points with grid snapping temporarily disabled
 
-|kbd:[Ctrl+C]
+|*Object Manipulation*
+|
+
+|kbd:[Ctrl] + kbd:[C]
 |Copy selected diagram objects
 
-|kbd:[Ctrl+V]
+|kbd:[Ctrl] + kbd:[V]
 |Paste copied objects at cursor position
+
+|kbd:[Ctrl] + kbd:[D]
+|Duplicate selected objects with offset
 
 |kbd:[Delete]
 |Delete selected diagram objects
 
-|kbd:[Ctrl+Right Arrow]
+|kbd:[Ctrl] + kbd:[Right Arrow]
 |Rotate selected objects 90° clockwise
 
-|kbd:[Ctrl+Left Arrow]
+|kbd:[Ctrl] + kbd:[Left Arrow]
 |Rotate selected objects 90° counter-clockwise
-
-|kbd:[Esc]
-|Close active tooltip
 |===
 
 == Point Tooltips

@@ -1,17 +1,18 @@
 import { get } from 'svelte/store';
-import type { InteractionState, Point2D } from '../../../core/models/types';
+import type { InteractionState, Point2D, MovePointsByDeltaData } from '../../../core/models/types';
 import { InteractionMode } from '../../../core/models/types';
 import type { PointModel } from '../../../core/models/PointModel';
 import { AppConfig } from '../../../core/config/AppConfig';
 import { screenToWorld } from '../../../utils/geometry';
 import { findClosestLineSegment } from '../../../utils/geometry';
 import { serviceRegistry } from '../../../services/ServiceRegistry';
+import { canvasService } from '../../canvas/CanvasService';
 
 // Import from UI state
 import { updateCoordinates } from '../../ui/UIState';
 
 // Import from canvas state
-import { viewTransform, zoom as zoomViewport } from '../../canvas/CanvasState';
+import { viewTransform, zoom as zoomViewport, resetViewTransform, gridSize } from '../../canvas/CanvasState';
 
 // Import from interaction state
 import { 
@@ -26,7 +27,8 @@ import {
   startPanning,
   updatePanning,
   endPanning,
-  clearSelection
+  clearSelection,
+  positionUpdateEvent
 } from '../InteractionState';
 
 // Import from diagram state
@@ -47,6 +49,15 @@ import type { DiagramObjectModel } from '@/core/models/DiagramModel';
 const pointService = serviceRegistry.pointService;
 const objectService = serviceRegistry.objectService;
 
+// Add a variable to track the last mouse event
+let lastMouseEvent: MouseEvent | null = null;
+
+// Add a variable to track temporary pan mode
+let tempPanData = {
+  previousMode: InteractionMode.NONE,
+  enabled: false
+};
+
 /**
  * Svelte action for canvas interactions
  * Handles mouse and wheel events for panning, zooming, selecting, and dragging
@@ -64,12 +75,62 @@ export function canvasInteraction(canvas: HTMLCanvasElement) {
   // Handle keyboard events for copy/paste
   function handleKeyDown(e: KeyboardEvent) {
     if (get(showPointTooltip) && e.key === 'Escape') {
-      // Let the tooltip component handle this
+      // Close tooltip with Escape
+      hideTooltip();
       return;
     }
     
+    // If Escape is pressed and no tooltip is showing, clear selection
+    if (e.key === 'Escape') {
+      clearSelection();
+      return;
+    }
+    
+    // Handle navigation with arrow keys
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+      if (e.ctrlKey) {
+        // Move selected objects with Ctrl + Arrow keys
+        handleObjectMovement(e);
+        return;
+      } else {
+        // Pan the canvas with Arrow keys
+        handlePanning(e);
+        return;
+      }
+    }
+    
+    // Handle zooming with Ctrl + plus/minus
     if (e.ctrlKey) {
-      if (e.key === 'c') {
+      if (e.key === '=' || e.key === '+' || e.key === 'NumpadAdd') {
+        e.preventDefault();
+        handleZoom(true, e.shiftKey, e.altKey);
+        return;
+      } else if (e.key === '-' || e.key === '_' || e.key === 'NumpadSubtract') {
+        e.preventDefault();
+        handleZoom(false, e.shiftKey, e.altKey);
+        return;
+      } else if (e.key === '0' || e.key === 'Numpad0') {
+        // Reset zoom to 100%
+        e.preventDefault();
+        resetViewTransform();
+        canvasService.reRender();
+        return;
+      } else if (e.key === 'a') {
+        // Select all objects
+        e.preventDefault();
+        selectAllObjects();
+        return;
+      } else if (e.key === 'f') {
+        // Fit diagram to view
+        e.preventDefault();
+        fitDiagramToView();
+        return;
+      } else if (e.key === 'd') {
+        // Duplicate selected objects
+        e.preventDefault();
+        duplicateSelectedObjects();
+        return;
+      } else if (e.key === 'c') {
         // Copy operation
         copySelectedDiagramObjects();
       } else if (e.key === 'v') {
@@ -77,16 +138,20 @@ export function canvasInteraction(canvas: HTMLCanvasElement) {
         pasteDiagramObjects(currentMouseWorldPos);
       } else if (e.key === 'ArrowRight') {
         // Rotate 90 degrees clockwise
-        e.preventDefault(); // Prevent scrolling
+        e.preventDefault(); 
         rotateSelectedObjects(90);
       } else if (e.key === 'ArrowLeft') {
         // Rotate 90 degrees counter-clockwise
-        e.preventDefault(); // Prevent scrolling
+        e.preventDefault();
         rotateSelectedObjects(-90);
       }
     } else if (e.key === 'Delete') {
       // Delete operation
       deleteSelectedDiagramObjects();
+    } else if (e.key === ' ') {
+      // Space bar for temporary pan mode toggle
+      e.preventDefault();
+      togglePanMode(true);
     }
   }
   
@@ -126,8 +191,280 @@ export function canvasInteraction(canvas: HTMLCanvasElement) {
     }
   }
 
+  // Handle key up events
+  function handleKeyUp(e: KeyboardEvent): void {
+    if (e.key === ' ') {
+      // Space bar released, disable temporary pan mode
+      togglePanMode(false);
+    }
+  }
+
+  /**
+   * Handle panning the canvas with arrow keys
+   */
+  function handlePanning(e: KeyboardEvent): void {
+    const currentGridSize = get(gridSize);
+    let panDistance: number;
+    
+    // Determine pan distance based on modifiers
+    if (e.shiftKey) {
+      panDistance = currentGridSize * 10; // Shift = 10x grid size
+    } else if (e.altKey) {
+      panDistance = 1; // Alt = precise 1-unit movement
+    } else {
+      panDistance = currentGridSize; // Default = grid size
+    }
+    
+    // Apply pan in appropriate direction
+    viewTransform.update(transform => {
+      let offsetX = transform.offsetX;
+      let offsetY = transform.offsetY;
+      
+      switch (e.key) {
+        case 'ArrowUp':
+          offsetY += panDistance * transform.scale;
+          break;
+        case 'ArrowDown':
+          offsetY -= panDistance * transform.scale;
+          break;
+        case 'ArrowLeft':
+          offsetX += panDistance * transform.scale;
+          break;
+        case 'ArrowRight':
+          offsetX -= panDistance * transform.scale;
+          break;
+      }
+      
+      return { ...transform, offsetX, offsetY };
+    });
+    
+    // Re-render the canvas
+    canvasService.reRender();
+  }
+
+  /**
+   * Handle moving selected objects with Ctrl + arrow keys
+   */
+  function handleObjectMovement(e: KeyboardEvent): void {
+    const selectedPointIris = Array.from(get(interactionState).selectedPoints);
+    if (selectedPointIris.length === 0) return;
+    
+    const currentGridSize = get(gridSize);
+    let moveDistance: number;
+    
+    // Determine move distance based on modifiers
+    if (e.shiftKey) {
+      moveDistance = currentGridSize * 10; // Shift = 10x grid size
+    } else if (e.altKey) {
+      moveDistance = 1; // Alt = precise 1-unit movement
+    } else {
+      moveDistance = currentGridSize; // Default = grid size
+    }
+    
+    // Calculate delta vector based on key pressed
+    let dx = 0;
+    let dy = 0;
+    
+    switch (e.key) {
+      case 'ArrowUp':
+        dy = -moveDistance;
+        break;
+      case 'ArrowDown':
+        dy = moveDistance;
+        break;
+      case 'ArrowLeft':
+        dx = -moveDistance;
+        break;
+      case 'ArrowRight':
+        dx = moveDistance;
+        break;
+    }
+    
+    if (dx === 0 && dy === 0) return;
+    
+    // Move the points
+    const moveData: MovePointsByDeltaData = {
+      pointIris: selectedPointIris,
+      deltaVector: { dx, dy }
+    };
+    
+    // Move points locally first
+    const diagram = get(diagramData);
+    if (diagram) {
+      diagram.points
+        .filter(point => selectedPointIris.includes(point.iri))
+        .forEach(point => {
+          point.x += dx;
+          point.y += dy;
+        });
+      
+      // Update diagram to reflect changes
+      diagramData.set(diagram);
+    }
+    
+    // Trigger position update to persist changes
+    positionUpdateEvent.set(moveData);
+  }
+
+  /**
+   * Handle zooming with Ctrl + plus/minus keys
+   */
+  function handleZoom(zoomIn: boolean, largerStep: boolean = false, smallerStep: boolean = false): void {
+    // Calculate zoom center (center of canvas)
+    if (!canvas) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const center = {
+      x: rect.width / 2,
+      y: rect.height / 2
+    };
+    
+    // Determine zoom factor based on modifiers
+    let zoomFactor = AppConfig.canvas.zoomFactor;
+    
+    if (largerStep) {
+      zoomFactor = Math.pow(zoomFactor, 2); // Larger step with Shift
+    } else if (smallerStep) {
+      zoomFactor = Math.sqrt(zoomFactor); // Smaller step with Alt
+    }
+    
+    // Apply zoom
+    viewTransform.update(transform => {
+      // Determine new scale
+      let newScale: number;
+      if (zoomIn) {
+        newScale = transform.scale * zoomFactor;
+      } else {
+        newScale = transform.scale / zoomFactor;
+      }
+      
+      // Calculate new offsets to zoom at center
+      const newOffsetX = center.x - (center.x - transform.offsetX) * (newScale / transform.scale);
+      const newOffsetY = center.y - (center.y - transform.offsetY) * (newScale / transform.scale);
+      
+      return {
+        scale: newScale,
+        offsetX: newOffsetX,
+        offsetY: newOffsetY
+      };
+    });
+    
+    // Re-render the canvas
+    canvasService.reRender();
+  }
+
+  /**
+   * Select all objects in the diagram
+   */
+  function selectAllObjects(): void {
+    const diagram = get(diagramData);
+    if (!diagram) return;
+    
+    const allPointIris = diagram.points.map(point => point.iri);
+    
+    interactionState.update(state => ({
+      ...state,
+      selectedPoints: new Set(allPointIris)
+    }));
+  }
+
+  /**
+   * Fit the diagram to the current view
+   */
+  function fitDiagramToView(): void {
+    if (!canvas) return;
+    
+    const canvasSize = {
+      width: canvas.width,
+      height: canvas.height
+    };
+    
+    serviceRegistry.diagramService.autoFitDiagram(canvasSize);
+  }
+
+  /**
+   * Duplicate selected objects
+   */
+  function duplicateSelectedObjects(): void {
+    // First copy the selected objects
+    copySelectedDiagramObjects();
+    
+    // Then paste them with a slight offset
+    const currentGridSize = get(gridSize);
+    const offset = currentGridSize * 2; // Offset by 2x grid size
+    
+    // Find center of selection
+    const selectedPointIris = Array.from(get(interactionState).selectedPoints);
+    const diagram = get(diagramData);
+    
+    if (!diagram || selectedPointIris.length === 0) return;
+    
+    const selectedPoints = diagram.points.filter(point => selectedPointIris.includes(point.iri));
+    let sumX = 0, sumY = 0;
+    
+    selectedPoints.forEach(point => {
+      sumX += point.x;
+      sumY += point.y;
+    });
+    
+    const centerX = sumX / selectedPoints.length;
+    const centerY = sumY / selectedPoints.length;
+    
+    // Paste at slightly offset position
+    const pastePos = {
+      x: centerX + offset,
+      y: centerY
+    };
+    
+    pasteDiagramObjects(pastePos);
+  }
+
+  /**
+   * Toggle temporary pan mode
+   */
+  function togglePanMode(enabled: boolean): void {
+    if (enabled) {
+      const currentState = get(interactionState);
+      if (currentState.mode !== InteractionMode.PANNING) {
+        // Store previous mode
+        tempPanData.previousMode = currentState.mode;
+        tempPanData.enabled = true;
+        
+        // Start panning from current mouse position
+        if (lastMouseEvent) {
+          const rect = canvas.getBoundingClientRect();
+          const mouseScreenPos = {
+            x: lastMouseEvent.clientX - rect.left,
+            y: lastMouseEvent.clientY - rect.top
+          };
+          
+          startPanning(mouseScreenPos);
+        }
+      }
+    } else {
+      // Restore previous mode
+      if (tempPanData.enabled) {
+        endPanning();
+        tempPanData.enabled = false;
+        
+        // If we were in a specific mode before, restore it
+        if (tempPanData.previousMode !== InteractionMode.NONE) {
+          // This would need more logic to fully restore previous state
+          interactionState.update(state => ({
+            ...state,
+            mode: tempPanData.previousMode
+          }));
+          tempPanData.previousMode = InteractionMode.NONE;
+        }
+      }
+    }
+  }
+
   // Handle mouse movement for hover effects
   function handleMouseMove(e: MouseEvent) {
+    // Store the last mouse event for pan mode
+    lastMouseEvent = e;
+    
     if (hoverCheckScheduled) return;
   
     const { screenPos, worldPos } = getCoordinatesFromEvent(e);
@@ -384,6 +721,7 @@ export function canvasInteraction(canvas: HTMLCanvasElement) {
   canvas.addEventListener('dblclick', handleDoubleClick);
   canvas.addEventListener('mouseleave', handleMouseLeave);
   window.addEventListener('keydown', handleKeyDown);
+  window.addEventListener('keyup', handleKeyUp);
   
   return {
     destroy() {
@@ -395,6 +733,7 @@ export function canvasInteraction(canvas: HTMLCanvasElement) {
       canvas.removeEventListener('dblclick', handleDoubleClick);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
       
       // Reset hover state
       lastHoveredPoint = null;
