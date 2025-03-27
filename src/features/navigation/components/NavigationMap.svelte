@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
-    import type { DiagramModel } from '../../../core/models/DiagramModel';
-    import type { ViewTransform } from '../../../core/models/types';
+    import type { DiagramModel } from '@/core/models/DiagramModel';
+    import type { ViewTransform } from '@/core/models/types';
     import { canvasService } from '../../canvas/CanvasService';
     
     // Props

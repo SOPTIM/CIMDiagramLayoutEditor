@@ -1,9 +1,9 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import type { PointModel } from '../../../core/models/PointModel';
-  import type { ViewTransform, Point2D } from '../../../core/models/types';
-  import { worldToScreen } from '../../../utils/geometry';
-  import { serviceRegistry } from '../../../services/ServiceRegistry';
+  import type { PointModel } from '@/core/models/PointModel';
+  import type { ViewTransform, Point2D } from '@/core/models/types';
+  import { worldToScreen } from '@/utils/geometry';
+  import { serviceRegistry } from '@/services/ServiceRegistry';
   
   // Props
   let { 
