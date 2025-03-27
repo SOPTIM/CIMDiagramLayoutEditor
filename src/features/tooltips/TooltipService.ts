@@ -1,7 +1,7 @@
 import { get } from 'svelte/store';
-import type { PointModel } from '../../core/models/PointModel';
-import { SparqlService } from '../../services/SparqlService';
-import { TooltipQueryBuilder } from '../../queries/TooltipQueryBuilder';
+import type { PointModel } from '@/core/models/PointModel';
+import { SparqlService } from '@/services/SparqlService';
+import { TooltipQueryBuilder } from '@/queries/TooltipQueryBuilder';
 
 // Import state from feature modules
 import { cimNamespace } from '../diagram/DiagramState';

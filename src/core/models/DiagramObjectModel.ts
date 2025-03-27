@@ -1,6 +1,6 @@
 
 import { PointModel } from './PointModel';
-import type { Bounds, Point2D } from './types';
+import type { Point2D } from './types';
 
 /**
  * Model class for diagram objects
@@ -31,8 +31,8 @@ export class DiagramObjectModel {
     ) {
       this.iri = iri;
       this.drawingOrder = parseInt(String(drawingOrder)) || 0;
-      this.isPolygon = isPolygon === true;
-      this.isText = isText === true;
+      this.isPolygon = isPolygon;
+      this.isText = isText;
       this.textContent = textContent || '';
       this.points = [];
     }
@@ -55,31 +55,6 @@ export class DiagramObjectModel {
      */
     isSinglePoint(): boolean {
       return this.points.length === 1;
-    }
-    
-    /**
-     * Get the bounds of this object
-     * 
-     * @returns Bounds object
-     */
-    getBounds(): Bounds {
-      if (this.points.length === 0) {
-        return { minX: 0, minY: 0, maxX: 0, maxY: 0 };
-      }
-      
-      let minX = Infinity;
-      let minY = Infinity;
-      let maxX = -Infinity;
-      let maxY = -Infinity;
-      
-      for (const point of this.points) {
-        minX = Math.min(minX, point.x);
-        minY = Math.min(minY, point.y);
-        maxX = Math.max(maxX, point.x);
-        maxY = Math.max(maxY, point.y);
-      }
-      
-      return { minX, minY, maxX, maxY };
     }
     
     /**

@@ -1,8 +1,8 @@
 import { get } from 'svelte/store';
 import { v4 as uuidv4 } from 'uuid';
-import { SparqlService } from '../../services/SparqlService';
-import type { GluePointModel } from '../../core/models/GluePointModel';
-import type { DiagramService } from '../diagram/DiagramService';
+import { SparqlService } from '@/services/SparqlService';
+import type { GluePointModel } from '@/core/models/GluePointModel';
+import type { DiagramService } from '@/features/diagram/DiagramService';
 
 // Import state from feature modules
 import { diagramData, cimNamespace } from '../diagram/DiagramState';

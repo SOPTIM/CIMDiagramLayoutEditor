@@ -1,4 +1,3 @@
-import type { PointModel } from './PointModel';
 
 /**
  * Model class for diagram object glue points

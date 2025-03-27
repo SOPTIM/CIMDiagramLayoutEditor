@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
-import type { ViewTransform, Point2D } from '../../core/models/types';
-import { AppConfig } from '../../core/config/AppConfig';
+import type { ViewTransform, Point2D } from '@/core/models/types';
+import { AppConfig } from '@/core/config/AppConfig';
 
 // View transformation state
 export const viewTransform = writable<ViewTransform>({

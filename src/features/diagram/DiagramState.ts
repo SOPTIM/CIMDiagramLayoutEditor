@@ -1,7 +1,7 @@
 import { writable, derived } from 'svelte/store';
-import type { DiagramModel } from '../../core/models/DiagramModel';
-import { CGMESVersion } from '../../core/models/types';
-import { AppConfig } from '../../core/config/AppConfig';
+import type { DiagramModel } from '@/core/models/DiagramModel';
+import { CGMESVersion } from '@/core/models/types';
+import { AppConfig } from '@/core/config/AppConfig';
 
 // Core diagram state
 export const diagramData = writable<DiagramModel | null>(null);

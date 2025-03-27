@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 import { get } from 'svelte/store';
-import type { DiagramObjectModel } from '../../core/models/DiagramModel';
-import type { Point2D, MovePointsByDeltaData } from '../../core/models/types';
-import { PointModel } from '../../core/models/PointModel';
-import { SparqlService } from '../../services/SparqlService';
-import { PointQueryBuilder } from '../../queries/PointQueryBuilder';
+import type { DiagramObjectModel } from '@/core/models/DiagramObjectModel';
+import type { Point2D, MovePointsByDeltaData } from '@/core/models/types';
+import { PointModel } from '@/core/models/PointModel';
+import { SparqlService } from '@/services/SparqlService';
+import { PointQueryBuilder } from '@/queries/PointQueryBuilder';
 
 // Import state from feature modules
 import { diagramData, cimNamespace } from '../diagram/DiagramState';
@@ -174,7 +174,7 @@ export class PointService {
       const namespace = get(cimNamespace);
       
       // Prepare sequence number updates for all points in the object
-      const sequenceUpdates = object.points.map(p => ({
+      const sequenceUpdates = object.points.map((p: { iri: any; sequenceNumber: any; }) => ({
         iri: p.iri,
         sequenceNumber: p.sequenceNumber
       }));

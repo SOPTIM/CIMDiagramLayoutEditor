@@ -1,11 +1,11 @@
 import { get } from 'svelte/store';
-import type { InteractionState, Point2D, MovePointsByDeltaData } from '../../../core/models/types';
-import { InteractionMode } from '../../../core/models/types';
-import type { PointModel } from '../../../core/models/PointModel';
-import { AppConfig } from '../../../core/config/AppConfig';
-import { screenToWorld } from '../../../utils/geometry';
-import { findClosestLineSegment } from '../../../utils/geometry';
-import { serviceRegistry } from '../../../services/ServiceRegistry';
+import type { InteractionState, Point2D, MovePointsByDeltaData } from '@/core/models/types';
+import { InteractionMode } from '@/core/models/types';
+import type { PointModel } from '@/core/models/PointModel';
+import { AppConfig } from '@/core/config/AppConfig';
+import { screenToWorld } from '@/utils/geometry';
+import { findClosestLineSegment } from '@/utils/geometry';
+import { serviceRegistry } from '@/services/ServiceRegistry';
 import { canvasService } from '../../canvas/CanvasService';
 
 // Import from UI state
@@ -43,7 +43,7 @@ import {
   isTooltipHovered,
   hideTooltip,
 } from '../../tooltips/TooltipState';
-import type { DiagramObjectModel } from '@/core/models/DiagramModel';
+import type { DiagramObjectModel } from '@/core/models/DiagramObjectModel';
 
 // Services
 const pointService = serviceRegistry.pointService;
@@ -674,14 +674,14 @@ export function canvasInteraction(canvas: HTMLCanvasElement) {
       object: DiagramObjectModel,
       position: Point2D,
       insertIndex: number) {
-    pointService.addNewPointToLine(object, position, insertIndex);
+    await pointService.addNewPointToLine(object, position, insertIndex);
   }
 
   /**
    * Delete a point from a line in the diagram
    */
   async function deletePointFromLine(point: PointModel) {
-    pointService.deletePointFromLine(point);
+    await pointService.deletePointFromLine(point);
   }
 
   /**

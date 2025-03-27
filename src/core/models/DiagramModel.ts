@@ -189,7 +189,7 @@ export class DiagramModel {
   /**
    * Process diagram data from SPARQL response
    * 
-   * @param data - SPARQL response data
+   * @param results - SPARQL response data
    * @returns Processed diagram model
    */
   static fromSparqlResults(results: SparqlResults): DiagramModel {

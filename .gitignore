@@ -7,6 +7,4 @@ yarn.lock
 .idea/vcs.xml
 .idea/workspace.xml
 .idea/.gitignore
-.idea/CIMDiagramLayoutEditor.iml
-.idea/modules.xml
-.idea/vcs.xml
+/package-lock.json

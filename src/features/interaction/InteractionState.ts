@@ -1,9 +1,9 @@
 import { writable, derived, get } from 'svelte/store';
-import type { InteractionState, Point2D, MovePointsByDeltaData, DeltaVector } from '../../core/models/types';
-import { InteractionMode } from '../../core/models/types';
-import { viewTransform, gridSize } from '../canvas/CanvasState';
-import { diagramData } from '../diagram/DiagramState';
-import { AppConfig } from '../../core/config/AppConfig';
+import type { InteractionState, Point2D, MovePointsByDeltaData, DeltaVector } from '@/core/models/types';
+import { InteractionMode } from '@/core/models/types';
+import { viewTransform, gridSize } from '@/features/canvas/CanvasState';
+import { diagramData } from '@/features/diagram/DiagramState';
+import { AppConfig } from '@/core/config/AppConfig';
 import { DiagramModel } from '@/core/models/DiagramModel';
 
 // Define initial interaction state

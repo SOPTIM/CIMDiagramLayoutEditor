@@ -1,8 +1,8 @@
 import { get } from 'svelte/store';
-import { SparqlService } from '../../services/SparqlService';
-import { ObjectQueryBuilder } from '../../queries/ObjectQueryBuilder';
-import type { Point2D, Bounds } from '../../core/models/types';
-import type { DiagramObjectModel } from '../../core/models/DiagramObjectModel';
+import { SparqlService } from '@/services/SparqlService';
+import { ObjectQueryBuilder } from '@/queries/ObjectQueryBuilder';
+import type { Point2D, Bounds } from '@/core/models/types';
+import type { DiagramObjectModel } from '@/core/models/DiagramObjectModel';
 
 // Import state from feature modules
 import { diagramData, cimNamespace, selectedDiagram } from '../diagram/DiagramState';

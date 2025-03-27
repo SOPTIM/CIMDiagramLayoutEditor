@@ -1,14 +1,14 @@
 import { SparqlService } from './SparqlService';
-import { DiagramQueryBuilder } from '../queries/DiagramQueryBuilder';
-import { PointQueryBuilder } from '../queries/PointQueryBuilder';
-import { ObjectQueryBuilder } from '../queries/ObjectQueryBuilder';
-import { TooltipQueryBuilder } from '../queries/TooltipQueryBuilder';
+import { DiagramQueryBuilder } from '@/queries/DiagramQueryBuilder';
+import { PointQueryBuilder } from '@/queries/PointQueryBuilder';
+import { ObjectQueryBuilder } from '@/queries/ObjectQueryBuilder';
+import { TooltipQueryBuilder } from '@/queries/TooltipQueryBuilder';
 
-import { DiagramService } from '../features/diagram/DiagramService';
-import { PointService } from '../features/points/PointService';
-import { ObjectService } from '../features/objects/ObjectService';
-import { TooltipService } from '../features/tooltips/TooltipService';
-import { AppConfig } from '../core/config/AppConfig';
+import { DiagramService } from '@/features/diagram/DiagramService';
+import { PointService } from '@/features/points/PointService';
+import { ObjectService } from '@/features/objects/ObjectService';
+import { TooltipService } from '@/features/tooltips/TooltipService';
+import { AppConfig } from '@/core/config/AppConfig';
 import { GluePointQueryBuilder } from '@/queries/GluePointQueryBuilder ';
 import { GluePointService } from '@/features/gluepoints/GluePointService';
 

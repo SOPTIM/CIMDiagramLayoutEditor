@@ -1,11 +1,11 @@
 import { get } from 'svelte/store';
-import type { CanvasSize, SparqlDiagramData } from '../../core/models/types';
-import { DiagramModel } from '../../core/models/DiagramModel';
-import { SparqlService } from '../../services/SparqlService';
-import { DiagramQueryBuilder } from '../../queries/DiagramQueryBuilder';
-import { isValidEndpoint } from '../../services/utils/sparql-utils';
-import { addPaddingToBounds, calculateFitScale } from '../../utils/geometry';
-import { AppConfig } from '../../core/config/AppConfig';
+import type { CanvasSize, SparqlDiagramData } from '@/core/models/types';
+import { DiagramModel } from '@/core/models/DiagramModel';
+import { SparqlService } from '@/services/SparqlService';
+import { DiagramQueryBuilder } from '@/queries/DiagramQueryBuilder';
+import { isValidEndpoint } from '@/services/utils/sparql-utils';
+import { addPaddingToBounds, calculateFitScale } from '@/utils/geometry';
+import { AppConfig } from '@/core/config/AppConfig';
 
 // Import state from feature modules
 import { 

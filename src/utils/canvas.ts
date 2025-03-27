@@ -1,7 +1,7 @@
-import type { PointModel } from '../core/models/PointModel';
-import type { DiagramObjectModel } from '../core/models/DiagramObjectModel';
-import type { ViewTransform, Point2D } from '../core/models/types';
-import { AppConfig } from '../core/config/AppConfig';
+import type { PointModel } from '@/core/models/PointModel';
+import type { DiagramObjectModel } from '@/core/models/DiagramObjectModel';
+import type { ViewTransform, Point2D } from '@/core/models/types';
+import { AppConfig } from '@/core/config/AppConfig';
 import { getDynamicSize } from './geometry';
 
 /**
