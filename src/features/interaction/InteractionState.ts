@@ -1,10 +1,10 @@
 import { writable, derived, get } from 'svelte/store';
-import type { InteractionState, Point2D, MovePointsByDeltaData, DeltaVector } from '../../core/models/types';
-import { InteractionMode } from '../../core/models/types';
-import { viewTransform, gridSize } from '../canvas/CanvasState';
-import { diagramData } from '../diagram/DiagramState';
-import { AppConfig } from '../../core/config/AppConfig';
-import type { DiagramModel } from '@/core/models/DiagramModel';
+import type { InteractionState, Point2D, MovePointsByDeltaData, DeltaVector } from '@/core/models/types';
+import { InteractionMode } from '@/core/models/types';
+import { viewTransform, gridSize } from '@/features/canvas/CanvasState';
+import { diagramData } from '@/features/diagram/DiagramState';
+import { AppConfig } from '@/core/config/AppConfig';
+import { DiagramModel } from '@/core/models/DiagramModel';
 
 // Define initial interaction state
 const initialInteractionState: InteractionState = {
@@ -109,23 +109,23 @@ export function updateDragging(position: Point2D, altKeyPressed: boolean = false
   const currentDiagram = get(diagramData);
 
   if(!currentDiagram) return;
-  
+
   if (!isValidDraggingState(currentState, currentDiagram)) {
     return;
   }
-  
+
   // Update ALT key state
   interactionState.update(state => ({...state, altKeyPressed}));
-  
+
   // Calculate movement with possible grid snapping
   const { dx, dy } = calculateDragMovement(position, currentState, altKeyPressed);
-  
-  // Apply movement to selected points
+
+  // Apply movement to selected points only
   updateSelectedPointPositions(currentDiagram, currentState, dx, dy);
-  
+
   // Update drag end position
   interactionState.update(state => ({...state, dragEnd: position}));
-  
+
   // Trigger diagram update
   diagramData.set(currentDiagram);
 }

@@ -1,8 +1,8 @@
 import { get } from 'svelte/store';
-import { SparqlService } from '../../services/SparqlService';
-import { ObjectQueryBuilder } from '../../queries/ObjectQueryBuilder';
-import type { Point2D, Bounds } from '../../core/models/types';
-import type { DiagramObjectModel } from '../../core/models/DiagramModel';
+import { SparqlService } from '@/services/SparqlService';
+import { ObjectQueryBuilder } from '@/queries/ObjectQueryBuilder';
+import type { Point2D, Bounds } from '@/core/models/types';
+import type { DiagramObjectModel } from '@/core/models/DiagramObjectModel';
 
 // Import state from feature modules
 import { diagramData, cimNamespace, selectedDiagram } from '../diagram/DiagramState';
@@ -305,7 +305,7 @@ export class ObjectService {
     
     // Select all points of these objects
     this.selectAllPointsOfObjects(objectIris);
-
+  
     // Wait for rendering of selected objects
     await new Promise(r => setTimeout(r, 200));
     
@@ -315,6 +315,31 @@ export class ObjectService {
     if (!confirmDelete) {
       updateStatus('Delete operation cancelled');
       return;
+    }
+    
+    // Check for glue point connections to other objects
+    const pointsToDelete = new Set<string>();
+    currentDiagram.points.forEach(point => {
+      if (point.parentObject && objectIris.has(point.parentObject.iri)) {
+        pointsToDelete.add(point.iri);
+      }
+    });
+    
+    const hasExternalGlueConnections = Array.from(pointsToDelete).some(pointIri => {
+      const gluedPoints = currentDiagram.getGluedPoints(pointIri);
+      return gluedPoints.some(gluedPointIri => !pointsToDelete.has(gluedPointIri));
+    });
+    
+    if (hasExternalGlueConnections) {
+      const confirmBreakConnections = window.confirm(
+          'Some of these objects have points glued to other objects. ' +
+          'Deleting these objects will break these glue connections. Continue?'
+      );
+      
+      if (!confirmBreakConnections) {
+        updateStatus('Delete operation cancelled');
+        return;
+      }
     }
     
     // Start loading
@@ -343,7 +368,7 @@ export class ObjectService {
     } catch (error) {
       console.error('Error deleting diagram objects:', error);
       updateStatus(`Error: ${error instanceof Error ? error.message : String(error)}`);
-
+  
       await this.diagramService.reloadDiagram();
     } finally {
       setLoading(false);

@@ -1,6 +1,6 @@
 import type { Point2D, Bounds } from './types';
-import type { DiagramObjectModel } from './DiagramModel';
-import { distanceSquared } from '../../utils/geometry';
+import type { DiagramObjectModel } from './DiagramObjectModel';
+import { distanceSquared } from '@/utils/geometry';
 
 /**
  * Model class for diagram points
@@ -98,8 +98,8 @@ export class PointModel {
   
   /**
    * Create a PointModel from raw data
-   * 
-   * @param data - Raw point data
+   *
+   * @param binding
    * @param parentObject - Parent diagram object
    * @returns New point model
    */

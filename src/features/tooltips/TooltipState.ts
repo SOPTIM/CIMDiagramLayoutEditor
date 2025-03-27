@@ -1,5 +1,5 @@
 import { writable, get } from 'svelte/store';
-import type { PointModel } from '../../core/models/PointModel';
+import type { PointModel } from '@/core/models/PointModel';
 
 // Store for tracking the hovered point
 export const hoveredPoint = writable<PointModel | null>(null);

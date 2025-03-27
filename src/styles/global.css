@@ -64,8 +64,3 @@ button:disabled {
   background-color: var(--disabled-color);
   cursor: not-allowed;
 }
-
-/* Layout helpers */
-.spacer {
-  flex: 1;
-}

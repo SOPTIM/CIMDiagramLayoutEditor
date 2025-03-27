@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 import { get } from 'svelte/store';
-import type { DiagramObjectModel } from '../../core/models/DiagramModel';
-import type { Point2D, MovePointsByDeltaData } from '../../core/models/types';
-import { PointModel } from '../../core/models/PointModel';
-import { SparqlService } from '../../services/SparqlService';
-import { PointQueryBuilder } from '../../queries/PointQueryBuilder';
+import type { DiagramObjectModel } from '@/core/models/DiagramObjectModel';
+import type { Point2D, MovePointsByDeltaData } from '@/core/models/types';
+import { PointModel } from '@/core/models/PointModel';
+import { SparqlService } from '@/services/SparqlService';
+import { PointQueryBuilder } from '@/queries/PointQueryBuilder';
 
 // Import state from feature modules
 import { diagramData, cimNamespace } from '../diagram/DiagramState';
@@ -174,7 +174,7 @@ export class PointService {
       const namespace = get(cimNamespace);
       
       // Prepare sequence number updates for all points in the object
-      const sequenceUpdates = object.points.map(p => ({
+      const sequenceUpdates = object.points.map((p: { iri: any; sequenceNumber: any; }) => ({
         iri: p.iri,
         sequenceNumber: p.sequenceNumber
       }));
@@ -238,10 +238,31 @@ export class PointService {
    * Update point positions in the diagram
    */
   async updatePointPositions(pointsAndVector: MovePointsByDeltaData): Promise<boolean> {
-    
+  
     if (pointsAndVector.pointIris.length === 0) {
       return false;
     }
+    
+    // Get the diagram data
+    const currentDiagram = get(diagramData);
+    if (!currentDiagram) return false;
+    
+    // Find all glued points that need to be updated
+    const allPointsToUpdate = new Set<string>(pointsAndVector.pointIris);
+    
+    // For each selected point, add its glued points
+    pointsAndVector.pointIris.forEach(pointIri => {
+      const gluedPoints = currentDiagram.getGluedPoints(pointIri);
+      gluedPoints.forEach(gluedPointIri => {
+        allPointsToUpdate.add(gluedPointIri);
+      });
+    });
+    
+    // Create the updated movement data
+    const updatedPointsAndVector: MovePointsByDeltaData = {
+      pointIris: Array.from(allPointsToUpdate),
+      deltaVector: pointsAndVector.deltaVector
+    };
     
     setLoading(true);
     updateStatus('Updating point positions...');
@@ -250,12 +271,12 @@ export class PointService {
       // Get current namespace
       const namespace = get(cimNamespace);
       // Build update query
-      const query = this.pointQueryBuilder.buildUpdateDiagramPointPositionsByVectorQuery(pointsAndVector, namespace);
+      const query = this.pointQueryBuilder.buildUpdateDiagramPointPositionsByVectorQuery(updatedPointsAndVector, namespace);
       
       // Execute update
       await this.sparqlService.executeUpdate(query);
       
-      updateStatus(`Updated ${pointsAndVector.pointIris.length} points`);      
+      updateStatus(`Updated ${updatedPointsAndVector.pointIris.length} points`);      
       return true;
     } catch (error) {
       console.error('Error updating point positions:', error);

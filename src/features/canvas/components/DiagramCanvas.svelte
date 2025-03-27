@@ -15,13 +15,15 @@
   import { diagramData } from '../../diagram/DiagramState';
   import { canvasInteraction } from '../../interaction/actions/canvasInteraction';
   import { resizable } from '../../interaction/actions/resizable';
-  import { resizeCanvas } from '../../../utils/canvas';
+  import { resizeCanvas } from '@/utils/canvas';
   import NavigationMap from '../../navigation/components/NavigationMap.svelte';
   import PolygonCheckbox from '../../objects/components/PolygonCheckbox.svelte';
   import PointTooltip from '../../tooltips/components/PointTooltip.svelte';
-  import type { MovePointsByDeltaData, Point2D } from '../../../core/models/types';
-  import type { PointModel } from '../../../core/models/PointModel';
-  import { serviceRegistry } from '@/services/ServiceRegistry';  
+  import type { MovePointsByDeltaData, Point2D } from '@/core/models/types';
+  import type { PointModel } from '@/core/models/PointModel';
+  import { serviceRegistry } from '@/services/ServiceRegistry';
+  import GlueCheckbox from '../../gluepoints/components/GlueCheckbox.svelte';
+  import GluePointVisualizer from "@/features/gluepoints/components/GluePointVisualizer.svelte";
   
   // Props
   export let showNavigationMap = true;
@@ -184,7 +186,11 @@
     onEnter={handleTooltipEnter}
     onLeave={handleTooltipLeave}>
   </PointTooltip>
-  
+
+  <!-- Connection checkbox for creating/removing glue points -->
+  <GlueCheckbox viewTransform={$viewTransform}></GlueCheckbox>
+  <GluePointVisualizer viewTransform={$viewTransform}></GluePointVisualizer>
+
   <!-- Navigation map in the lower right corner -->
   <NavigationMap 
     diagram={$diagramData} 

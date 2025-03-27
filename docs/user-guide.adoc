@@ -114,10 +114,10 @@ You can permanently toggle the snap-to-grid behavior using the checkbox in the G
 |Select points and press kbd:[Delete] to remove their parent objects (with confirmation)
 
 |*Rotate Clockwise*
-|Select points and press kbd:[Ctrl+Right Arrow] to rotate 90° clockwise
+|Select points and click the +90° button in the control panel to rotate 90° clockwise
 
 |*Rotate Counter-clockwise*
-|Select points and press kbd:[Ctrl+Left Arrow] to rotate 90° counter-clockwise
+|Select points and click the -90° button in the control panel to rotate 90° counter-clockwise
 |===
 
 == Navigation Map
@@ -157,7 +157,7 @@ The navigation map is a miniature representation of the entire diagram that appe
 [TIP]
 The navigation map is especially useful for very large diagrams where it's easy to lose context of where you are in the overall structure.
 
-== Grid Functions
+== Grid and Control Functions
 
 [cols="1,3"]
 |===
@@ -171,6 +171,15 @@ The navigation map is especially useful for very large diagrams where it's easy 
 
 |*Grid Size*
 |Adjust the spacing between grid lines (smaller values provide finer control)
+
+|*Show Glue Connections*
+|Toggle to display dotted lines between glued points
+
+|*+90° Button*
+|Rotate selected objects 90 degrees clockwise
+
+|*-90° Button*
+|Rotate selected objects 90 degrees counter-clockwise
 |===
 
 === Grid Snapping Controls
@@ -268,11 +277,6 @@ When moving multiple points, the first selected point will snap to the grid, and
 |kbd:[Delete]
 |Delete selected diagram objects
 
-|kbd:[Ctrl] + kbd:[Right Arrow]
-|Rotate selected objects 90° clockwise
-
-|kbd:[Ctrl] + kbd:[Left Arrow]
-|Rotate selected objects 90° counter-clockwise
 |===
 
 == Point Tooltips
@@ -287,6 +291,49 @@ The tooltip provides several interaction options:
 * Pin/unpin the tooltip to keep it visible
 * Copy values to clipboard by selecting the text
 * Close the tooltip with the X button or kbd:[Esc] key
+
+== Working with Glue Points
+
+[cols="1,3"]
+|===
+|Action |Description
+
+|*Show Glue Connections*
+|Toggle the "Show Glue Connections" checkbox in the grid controls panel to display dotted lime lines between glued points
+
+|*Select Glue Connection*
+|Hold kbd:[Ctrl] and click on a glue line (dotted lime line) to select both glued points at once, making the "Glued" checkbox visible
+
+|*Create Glue Connection*
+|Select exactly two points from different objects, then check the "glued" checkbox that appears
+
+|*Remove Glue Connection*
+|Select two glued points and uncheck the "glued" checkbox
+
+|*Glue Point Behavior*
+|Points that are glued together maintain their logical connection while allowing independent movement
+|===
+
+=== Glue Points and Diagram Operations
+
+Glue point relationships are preserved during these operations:
+
+* *Dragging points*: Connected points move together
+* *Copying objects*: When you copy and paste objects, their glue point connections to other copied objects are preserved
+* *Rotation*: When rotating objects, their glue point connections are maintained
+
+
+[IMPORTANT]
+====
+When deleting an object that has glue point connections to objects that aren't being deleted, those connections will be broken. The application will warn you before proceeding.
+====
+
+=== Best Practices for Working with Glue Points
+
+* Use glue points to connect related components in power system diagrams
+* The "Show Glue Connections" toggle helps visualize the logical structure of your diagram
+* When reorganizing a diagram, consider moving groups of connected objects together
+* Check for existing connections before deleting objects to avoid breaking logical relationships accidentally
 
 == Technical Details
 

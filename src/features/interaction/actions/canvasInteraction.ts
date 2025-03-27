@@ -1,11 +1,11 @@
 import { get } from 'svelte/store';
-import type { InteractionState, Point2D, MovePointsByDeltaData } from '../../../core/models/types';
-import { InteractionMode } from '../../../core/models/types';
-import type { PointModel } from '../../../core/models/PointModel';
-import { AppConfig } from '../../../core/config/AppConfig';
-import { screenToWorld } from '../../../utils/geometry';
-import { findClosestLineSegment } from '../../../utils/geometry';
-import { serviceRegistry } from '../../../services/ServiceRegistry';
+import type { InteractionState, Point2D, MovePointsByDeltaData } from '@/core/models/types';
+import { InteractionMode } from '@/core/models/types';
+import type { PointModel } from '@/core/models/PointModel';
+import { AppConfig } from '@/core/config/AppConfig';
+import {pointToLineDistanceSquared, screenToWorld} from '@/utils/geometry';
+import { findClosestLineSegment } from '@/utils/geometry';
+import { serviceRegistry } from '@/services/ServiceRegistry';
 import { canvasService } from '../../canvas/CanvasService';
 
 // Import from UI state
@@ -43,7 +43,9 @@ import {
   isTooltipHovered,
   hideTooltip,
 } from '../../tooltips/TooltipState';
-import type { DiagramObjectModel } from '@/core/models/DiagramModel';
+import type { DiagramObjectModel } from '@/core/models/DiagramObjectModel';
+import {selectedGluePoint, showGluePoints} from "@/features/gluepoints/GluePointState";
+import type {DiagramModel} from "@/core/models/DiagramModel";
 
 // Services
 const pointService = serviceRegistry.pointService;
@@ -146,7 +148,32 @@ export function canvasInteraction(canvas: HTMLCanvasElement) {
         rotateSelectedObjects(-90);
       }
     } else if (e.key === 'Delete') {
-      // Delete operation
+      // First check if a glue point is selected or if selected points are part of glue points
+      const hasSelectedGluePoint = get(selectedGluePoint) !== null;
+      if (hasSelectedGluePoint) {
+        // Handle via GluePointVisualizer component (it has its own DELETE handler)
+        return;
+      }
+
+      // Check if any selected points are part of glue points
+      const selectedPoints = Array.from(get(interactionState).selectedPoints);
+      if (selectedPoints.length > 0) {
+        const diagram = get(diagramData);
+        if (diagram) {
+          // Check if any point is part of a glue connection
+          const hasGluePoints = selectedPoints.some(pointIri =>
+              diagram.pointToGluePointMap.has(pointIri)
+          );
+
+          if (hasGluePoints) {
+            // Let the glue point service handle the delete operation
+            serviceRegistry.gluePointService.handleDeleteKeyOnGluePoint();
+            return;
+          }
+        }
+      }
+
+      // If no glue points are involved, proceed with regular delete operation
       deleteSelectedDiagramObjects();
     } else if (e.key === ' ') {
       // Space bar for temporary pan mode toggle
@@ -587,8 +614,23 @@ export function canvasInteraction(canvas: HTMLCanvasElement) {
         // Toggle point selection
         togglePointSelection(clickedPoint.iri);
       } else {
-        // Start rectangular selection
-        startSelecting(worldPos);
+        // Check if we clicked near a glue connection line
+        const glueLineThreshold = selectionRadius * 2; // Make it a bit easier to click on lines
+        const glueConnection = findClosestGlueConnection(worldPos, diagram, glueLineThreshold);
+
+        if (glueConnection) {
+          // Select both points connected by the glue line
+          // If either point is already selected, we'll add the other one to the selection
+          if (!currentState.selectedPoints.has(glueConnection.point1)) {
+            togglePointSelection(glueConnection.point1);
+          }
+          if (!currentState.selectedPoints.has(glueConnection.point2)) {
+            togglePointSelection(glueConnection.point2);
+          }
+        } else {
+          // Start rectangular selection
+          startSelecting(worldPos);
+        }
       }
     } else if (currentState.selectedPoints.size > 0) {
       
@@ -674,14 +716,14 @@ export function canvasInteraction(canvas: HTMLCanvasElement) {
       object: DiagramObjectModel,
       position: Point2D,
       insertIndex: number) {
-    pointService.addNewPointToLine(object, position, insertIndex);
+    await pointService.addNewPointToLine(object, position, insertIndex);
   }
 
   /**
    * Delete a point from a line in the diagram
    */
   async function deletePointFromLine(point: PointModel) {
-    pointService.deletePointFromLine(point);
+    await pointService.deletePointFromLine(point);
   }
 
   /**
@@ -711,6 +753,44 @@ export function canvasInteraction(canvas: HTMLCanvasElement) {
    */
   function rotateSelectedObjects(degrees: number) {
     objectService.rotateSelectedObjects(degrees);
+  }
+
+  function findClosestGlueConnection(worldPos: Point2D, diagram: DiagramModel, threshold: number): {point1: string, point2: string} | null {
+    if (!diagram || !get(showGluePoints)) return null;
+
+    let closestDistance = threshold;
+    let closestConnection = null;
+
+    // Get all glue connections
+    diagram.gluePoints.forEach(gluePoint => {
+      const connectedPoints = Array.from(gluePoint.connectedPoints);
+
+      // For each pair of points in this glue point
+      for (let i = 0; i < connectedPoints.length; i++) {
+        for (let j = i + 1; j < connectedPoints.length; j++) {
+          const point1 = diagram.points.find(p => p.iri === connectedPoints[i]);
+          const point2 = diagram.points.find(p => p.iri === connectedPoints[j]);
+
+          if (point1 && point2) {
+            const distance = pointToLineDistanceSquared(
+                worldPos,
+                { x: point1.x, y: point1.y },
+                { x: point2.x, y: point2.y }
+            ).distanceSquared;
+
+            if (distance < closestDistance) {
+              closestDistance = distance;
+              closestConnection = {
+                point1: point1.iri,
+                point2: point2.iri
+              };
+            }
+          }
+        }
+      }
+    });
+
+    return closestConnection;
   }
   
   // Attach event listeners
