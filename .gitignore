@@ -2,6 +2,10 @@ dist/**
 node_modules/**
 public/docs/user-guide.html
 yarn.lock
+.idea/CIMDiagramLayoutEditor.iml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
 .idea/.gitignore
 .idea/CIMDiagramLayoutEditor.iml
 .idea/modules.xml

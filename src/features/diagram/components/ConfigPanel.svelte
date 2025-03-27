@@ -14,6 +14,7 @@
   import Select from '../../ui/base-components/Select.svelte';
   import RadioGroup from '../../ui/base-components/RadioGroup.svelte';
   import Input from '../../ui/base-components/Input.svelte';
+  import { showGluePoints } from '../../gluepoints/GluePointState';
   
   // Get service
   const diagramService = serviceRegistry.diagramService;
@@ -154,7 +155,15 @@
     </label>
     <span class="grid-hint">Hold ALT to disable grid snapping</span>
   </div>
+  <div class="checkbox-group">
+    <label>
+      <input type="checkbox" bind:checked={$showGluePoints} />
+      Show Glue Points
+    </label>
+  </div>
 </div>
+
+
 
 <style>
   .config-panel {

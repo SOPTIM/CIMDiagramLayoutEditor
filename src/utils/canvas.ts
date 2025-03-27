@@ -1,5 +1,5 @@
 import type { PointModel } from '../core/models/PointModel';
-import type { DiagramObjectModel } from '../core/models/DiagramModel';
+import type { DiagramObjectModel } from '../core/models/DiagramObjectModel';
 import type { ViewTransform, Point2D } from '../core/models/types';
 import { AppConfig } from '../core/config/AppConfig';
 import { getDynamicSize } from './geometry';
@@ -199,4 +199,39 @@ export function renderGrid(
   }
   
   ctx.stroke();
+}
+
+/**
+ * Render glue point connections
+ * 
+ * @param ctx - Canvas context
+ * @param connections - Array of connection data
+ * @param viewTransform - Current view transformation
+ */
+export function renderGlueConnections(
+  ctx: CanvasRenderingContext2D,
+  connections: Array<{
+    point1: { x: number, y: number },
+    point2: { x: number, y: number }
+  }>,
+  viewTransform: ViewTransform
+): void {
+  ctx.save();
+  
+  // Set line style for glue connections
+  ctx.strokeStyle = '#007bff';
+  ctx.lineWidth = 1.5 / viewTransform.scale;
+  ctx.setLineDash([4 / viewTransform.scale, 4 / viewTransform.scale]);
+  
+  // Draw each connection
+  connections.forEach(conn => {
+    ctx.beginPath();
+    ctx.moveTo(conn.point1.x, conn.point1.y);
+    ctx.lineTo(conn.point2.x, conn.point2.y);
+    ctx.stroke();
+  });
+  
+  // Reset line style
+  ctx.setLineDash([]);
+  ctx.restore();
 }

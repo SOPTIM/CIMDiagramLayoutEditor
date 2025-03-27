@@ -9,6 +9,8 @@ import { PointService } from '../features/points/PointService';
 import { ObjectService } from '../features/objects/ObjectService';
 import { TooltipService } from '../features/tooltips/TooltipService';
 import { AppConfig } from '../core/config/AppConfig';
+import { GluePointQueryBuilder } from '@/queries/GluePointQueryBuilder ';
+import { GluePointService } from '@/features/gluepoints/GluePointService';
 
 /**
  * Registry for application services
@@ -22,12 +24,14 @@ class ServiceRegistry {
   private readonly pointQueryBuilder = new PointQueryBuilder();
   private readonly objectQueryBuilder = new ObjectQueryBuilder();
   private readonly tooltipQueryBuilder = new TooltipQueryBuilder();
+  private readonly gluePointQueryBuilder = new GluePointQueryBuilder();
   
   // Feature Services
   private readonly _diagramService: DiagramService;
   private readonly _pointService: PointService;
   private readonly _objectService: ObjectService;
   private readonly _tooltipService: TooltipService;
+  private readonly _gluePointService: GluePointService;
   
   constructor() {
     // Initialize services with dependencies
@@ -54,6 +58,12 @@ class ServiceRegistry {
       this.sparqlService,
       this.tooltipQueryBuilder
     );
+
+    this._gluePointService = new GluePointService(
+      this.sparqlService,
+      this.gluePointQueryBuilder,
+      this.diagramService
+    );
   }
   
   // Expose services as getters
@@ -71,6 +81,10 @@ class ServiceRegistry {
   
   get tooltipService(): TooltipService {
     return this._tooltipService;
+  }
+
+  get gluePointService(): GluePointService {
+    return this._gluePointService;
   }
 }
 
