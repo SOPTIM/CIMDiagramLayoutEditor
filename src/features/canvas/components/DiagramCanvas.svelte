@@ -23,7 +23,7 @@
   import type { PointModel } from '@/core/models/PointModel';
   import { serviceRegistry } from '@/services/ServiceRegistry';  
   import GluePointConnections from '../../gluepoints/components/GluePointConnections.svelte';
-  import ConnectionCheckbox from '../../gluepoints/components/ConnectionCheckbox.svelte';
+  import GlueCheckbox from '../../gluepoints/components/GlueCheckbox.svelte';
   
   // Props
   export let showNavigationMap = true;
@@ -191,7 +191,7 @@
   <GluePointConnections viewTransform={$viewTransform}></GluePointConnections>
 
   <!-- Connection checkbox for creating/removing glue points -->
-  <ConnectionCheckbox viewTransform={$viewTransform}></ConnectionCheckbox>
+  <GlueCheckbox viewTransform={$viewTransform}></GlueCheckbox>
 
   <!-- Navigation map in the lower right corner -->
   <NavigationMap 

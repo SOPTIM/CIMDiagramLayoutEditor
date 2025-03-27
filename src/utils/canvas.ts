@@ -219,7 +219,7 @@ export function renderGlueConnections(
   ctx.save();
   
   // Set line style for glue connections
-  ctx.strokeStyle = '#007bff';
+  ctx.strokeStyle = 'lime';
   ctx.lineWidth = 1.5 / viewTransform.scale;
   ctx.setLineDash([4 / viewTransform.scale, 4 / viewTransform.scale]);
   

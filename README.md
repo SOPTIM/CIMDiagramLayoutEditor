@@ -1,4 +1,4 @@
-# CGMES DiagramLayout Editor (Svelte & TypeScript)
+# CGMES DiagramLayout Editor
 
 A modern web application for editing CGMES (Common Grid Model Exchange Standard) diagram layouts using Svelte and TypeScript. This tool allows power system engineers and grid operators to visualize and modify network diagrams through an interactive web interface.
 
@@ -18,18 +18,14 @@ A modern web application for editing CGMES (Common Grid Model Exchange Standard)
 
 #### DiagramObjectGluePoint
 
-The CGMES DiagramLayout profile includes a class called `DiagramObjectGluePoint` that is used for grouping diagram object points from different diagram objects. These points are considered to be logically connected in a diagram even if they are not at the exact same coordinates.
+The CGMES DiagramLayout profile includes a class called `DiagramObjectGluePoint` that is used for grouping diagram object points from different diagram objects. These points are considered to be logically glued together in a diagram even if they are not at the exact same coordinates.
 
-The editor now supports visualization and management of these glue points with the following features:
+- **Visualizing Glue Connections**: Toggle the "Show Glue Connections" checkbox to display dotted lime lines between glued points
+- **Selecting Glue Connections**: Hold Ctrl and click on a glue line to select both of its endpoints at once
+- **Creating Glue Connections**: Select exactly two points from different objects to make the "glued" checkbox appear, then check it to create a glue point connection
+- **Breaking Glue Connections**: Select glued points and uncheck the "glued" checkbox
+- **Glue Point Behavior**: Points that are glued together maintain their logical connection while allowing independent movement
 
-- **Visualizing Connections**: Toggle the "Show Glue Points" checkbox to display dotted lines between connected points
-- **Creating Connections**: Select exactly two points from different objects to make the "Connected" checkbox appear, then check it to create a glue point connection
-- **Breaking Connections**: Select connected points and uncheck the "Connected" checkbox
-- **Moving Connected Points**: When dragging a point, all points connected to it via glue points will move together
-- **Copy/Paste with Connections**: Glue point relationships are preserved when copying and pasting objects
-- **Deletion Warnings**: The application warns when you attempt to delete objects that have glue point connections to other objects
-
-This feature is particularly useful for maintaining logical connections between electrical components while allowing flexibility in diagram layout.
 
 ## Diagram Layout Profile
 

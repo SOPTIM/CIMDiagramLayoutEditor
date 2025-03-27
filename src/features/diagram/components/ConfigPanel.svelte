@@ -179,7 +179,7 @@
   <div class="checkbox-group">
     <label>
       <input type="checkbox" bind:checked={$showGluePoints} />
-      Show Glue Points
+      Show Glue Connections
     </label>
   </div>
 
