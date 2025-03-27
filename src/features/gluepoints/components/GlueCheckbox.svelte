@@ -2,7 +2,7 @@
     import type { Point2D, ViewTransform } from '@/core/models/types';
     import { worldToScreen } from '@/utils/geometry';
     import { interactionState } from '../../interaction/InteractionState';
-    import { shouldShowConnectionCheckbox, isConnectionChecked } from '../GluePointState';
+    import { shouldShowGlueCheckbox, isGlueChecked } from '../GluePointState';
     import { diagramData } from '../../diagram/DiagramState';
     import { serviceRegistry } from '@/services/ServiceRegistry';
     
@@ -18,13 +18,13 @@
     // Watch changes in selected points
     $effect(() => {
       // Update visibility
-      isVisible = $shouldShowConnectionCheckbox;
-      
+      isVisible = $shouldShowGlueCheckbox;
+
       // Update checked state
-      isChecked = $isConnectionChecked;
+      isChecked = $isGlueChecked;
       
       // Update position (calculated midpoint between selected points)
-      if ($shouldShowConnectionCheckbox && $diagramData) {
+      if ($shouldShowGlueCheckbox && $diagramData) {
         const pointIris = Array.from($interactionState.selectedPoints);
         const point1 = $diagramData.points.find(p => p.iri === pointIris[0]);
         const point2 = $diagramData.points.find(p => p.iri === pointIris[1]);
@@ -73,7 +73,7 @@
         
         if (pointIris.length === 2) {
           // Toggle the connection
-          await serviceRegistry.gluePointService.toggleConnection(pointIris);
+          await serviceRegistry.gluePointService.toggleGlueConnection(pointIris);
         }
       }
     }
@@ -81,7 +81,7 @@
   
   {#if isVisible}
     <div 
-      class="connection-checkbox" 
+      class="glue-checkbox"
       style="left: {position.x}px; top: {position.y}px;"
     >
       <label for={checkboxId}>
@@ -91,13 +91,13 @@
           checked={isChecked} 
           onchange={handleChange}
         />
-        Connected
+        glued
       </label>
     </div>
   {/if}
   
   <style>
-    .connection-checkbox {
+    .glue-checkbox {
       position: absolute;
       background-color: rgba(255, 255, 255, 0.85);
       padding: 2px 8px;

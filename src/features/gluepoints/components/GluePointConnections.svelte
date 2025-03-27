@@ -77,7 +77,7 @@
   }
   
   .glue-line {
-    stroke: #007bff;
+    stroke: lime;
     stroke-width: 1.5;
     stroke-dasharray: 4, 4;
     stroke-linecap: round;

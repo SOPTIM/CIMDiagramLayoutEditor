@@ -332,8 +332,8 @@ export class ObjectService {
     
     if (hasExternalGlueConnections) {
       const confirmBreakConnections = window.confirm(
-        'Some of these objects have glue point connections to other objects. ' +
-        'Deleting these objects will break these connections. Continue?'
+          'Some of these objects have points glued to other objects. ' +
+          'Deleting these objects will break these glue connections. Continue?'
       );
       
       if (!confirmBreakConnections) {

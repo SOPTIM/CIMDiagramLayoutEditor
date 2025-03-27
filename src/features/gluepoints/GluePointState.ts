@@ -40,7 +40,7 @@ export function getVisibleGlueConnections(): Array<{
 }
 
 // Helper to check if two points are connected by a glue point
-export function arePointsConnected(point1Iri: string, point2Iri: string): boolean {
+export function arePointsGlued(point1Iri: string, point2Iri: string): boolean {
   const currentDiagram = get(diagramData);
   if (!currentDiagram) return false;
   
@@ -51,7 +51,7 @@ export function arePointsConnected(point1Iri: string, point2Iri: string): boolea
 }
 
 // Derived store to track if connection checkbox should be shown
-export const shouldShowConnectionCheckbox = derived(
+export const shouldShowGlueCheckbox  = derived(
   [interactionState, diagramData],
   ([$interactionState, $diagramData]) => {
     // Show if exactly two points are selected and they belong to different objects
@@ -69,12 +69,12 @@ export const shouldShowConnectionCheckbox = derived(
 );
 
 // Derived store to track if the connection checkbox should be checked
-export const isConnectionChecked = derived(
+export const isGlueChecked  = derived(
   [interactionState, diagramData],
   ([$interactionState, $diagramData]) => {
     if (!$diagramData || $interactionState.selectedPoints.size !== 2) return false;
     
     const pointIris = Array.from($interactionState.selectedPoints);
-    return arePointsConnected(pointIris[0], pointIris[1]);
+    return arePointsGlued(pointIris[0], pointIris[1]);
   }
 );

@@ -109,29 +109,23 @@ export function updateDragging(position: Point2D, altKeyPressed: boolean = false
   const currentDiagram = get(diagramData);
 
   if(!currentDiagram) return;
-  
+
   if (!isValidDraggingState(currentState, currentDiagram)) {
     return;
   }
-  
+
   // Update ALT key state
   interactionState.update(state => ({...state, altKeyPressed}));
-  
+
   // Calculate movement with possible grid snapping
   const { dx, dy } = calculateDragMovement(position, currentState, altKeyPressed);
 
-  // Apply movement to selected points
+  // Apply movement to selected points only
   updateSelectedPointPositions(currentDiagram, currentState, dx, dy);
 
-  // Now also update positions of glued points that are not selected
-  updateGluedPointPositions(currentDiagram, currentState, dx, dy);
-  
-  // Apply movement to selected points
-  updateSelectedPointPositions(currentDiagram, currentState, dx, dy);
-  
   // Update drag end position
   interactionState.update(state => ({...state, dragEnd: position}));
-  
+
   // Trigger diagram update
   diagramData.set(currentDiagram);
 }
@@ -184,44 +178,6 @@ function updateSelectedPointPositions(diagram: DiagramModel, state: InteractionS
         point.y = original.y + dy;
       }
     }
-  });
-}
-
-// Function to update positions of glued points
-function updateGluedPointPositions(diagram: DiagramModel, state: InteractionState, dx: number, dy: number) {
-  if (!diagram.points || !Array.isArray(diagram.points)) {
-    return;
-  }
-  
-  // Keep track of points we've already processed
-  const processedPoints = new Set<string>(state.selectedPoints);
-  
-  // For each selected point, find its glued points
-  state.selectedPoints.forEach(pointIri => {
-    const gluedPoints = diagram.getGluedPoints(pointIri);
-    
-    // Update positions of glued points that aren't already processed
-    gluedPoints.forEach(gluedPointIri => {
-      if (!processedPoints.has(gluedPointIri)) {
-        const gluedPoint = diagram.points.find(p => p.iri === gluedPointIri);
-        if (gluedPoint) {
-          // Store original position if not already stored
-          if (!state.originalPositions.has(gluedPointIri)) {
-            state.originalPositions.set(gluedPointIri, { x: gluedPoint.x, y: gluedPoint.y });
-          }
-          
-          // Move the glued point
-          const original = state.originalPositions.get(gluedPointIri);
-          if (original) {
-            gluedPoint.x = original.x + dx;
-            gluedPoint.y = original.y + dy;
-          }
-          
-          // Mark as processed
-          processedPoints.add(gluedPointIri);
-        }
-      }
-    });
   });
 }
 
