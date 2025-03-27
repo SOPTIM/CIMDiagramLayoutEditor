@@ -24,7 +24,7 @@
     // Update checked state
     isChecked = $isGlueChecked;
 
-    // Update position (calculated midpoint between selected points)
+    // Update position (calculated midpoint between all selected points)
     if ($shouldShowGlueCheckbox && $diagramData) {
       updatePosition();
     }
@@ -67,25 +67,11 @@
     const target = event.target as HTMLInputElement;
     const newValue = target.checked;
 
-    const gluePointService = serviceRegistry.gluePointService;
-
     if (newValue) {
       // Create glue point from selected points
-      await gluePointService.createGluePointFromSelectedPoints();
-    } else {
-      // Remove glue point connection
-      // We need to find which glue point connects these points
-      if ($diagramData) {
-        const pointIris = Array.from($interactionState.selectedPoints);
-        if (pointIris.length > 0) {
-          const firstPoint = pointIris[0];
-          const gluePointIri = $diagramData.pointToGluePointMap.get(firstPoint);
-          if (gluePointIri) {
-            await gluePointService.removeGluePoint(gluePointIri);
-          }
-        }
-      }
+      await serviceRegistry.gluePointService.createGluePointFromSelectedPoints();
     }
+    // We don't need to handle unchecking anymore - deletion is done via DELETE key
   }
 
   onMount(() => {

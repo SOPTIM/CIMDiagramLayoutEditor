@@ -20,11 +20,23 @@ A modern web application for editing CGMES (Common Grid Model Exchange Standard)
 
 The CGMES DiagramLayout profile includes a class called `DiagramObjectGluePoint` that is used for grouping diagram object points from different diagram objects. These points are considered to be logically glued together in a diagram even if they are not at the exact same coordinates.
 
-- **Visualizing Glue Connections**: Toggle the "Show Glue Connections" checkbox to display dotted lime lines between glued points
-- **Selecting Glue Connections**: Hold Ctrl and click on a glue line to select both of its endpoints at once
-- **Creating Glue Connections**: Select exactly two points from different objects to make the "glued" checkbox appear, then check it to create a glue point connection
-- **Breaking Glue Connections**: Select glued points and uncheck the "glued" checkbox
-- **Glue Point Behavior**: Points that are glued together maintain their logical connection while allowing independent movement
+#### Working with Glue Points
+
+- **Creating Glue Points**: Select two or more points from different diagram objects and check the "glued" checkbox that appears at the center of the selection.
+- **Visualizing Glue Points**: Toggle the "Show Glue Connections" checkbox to display lime green markers at the center of each glue point.
+- **Selecting Glue Points**: Click on a lime green glue point marker to select it and view all its connections.
+- **Managing Connection Points**:
+    - **Removing Points**: When a glue point is selected, each connected point shows a red "×" button. Click this button to remove the point from the glue point.
+    - **Adding Points**: When a glue point is selected, compatible points (from different diagram objects not yet in the glue point) show a green "+" button. Click this button to add the point to the glue point.
+- **Deleting Glue Points**: Select a glue point and press the DELETE key to remove it entirely.
+
+#### Glue Point Rules and Behavior
+
+- **Different Objects Requirement**: A glue point must connect points from at least two different diagram objects.
+- **Visual Representation**: Glue points are represented by a lime green marker at the center of the connected points.
+- **Connection Display**: When a glue point is selected or hovered, dotted lines show connections to all its points.
+- **Automatic Cleanup**: If removing a point would make a glue point invalid (fewer than 2 points or all from the same object), the entire glue point is removed.
+- **Independent Movement**: Points that are glued together maintain their logical connection while allowing independent movement.
 
 
 ## Diagram Layout Profile

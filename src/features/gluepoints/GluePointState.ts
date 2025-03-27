@@ -62,14 +62,34 @@ export function isPointInGluePoint(pointIri: string): string | null {
 }
 
 // Derived store to track if connection checkbox should be shown
-export const shouldShowGlueCheckbox  = derived(
+export const shouldShowGlueCheckbox = derived(
     [interactionState, diagramData],
     ([$interactionState, $diagramData]) => {
         // Show if at least two points are selected
         if (!$diagramData || $interactionState.selectedPoints.size < 2) return false;
 
-        // Check if selected points belong to different objects
         const pointIris = Array.from($interactionState.selectedPoints);
+
+        // Don't show if points are already part of the same glue point
+        let sharedGluePoint: string | null = null;
+        let allFromSameGluePoint = true;
+
+        for (const pointIri of pointIris) {
+            const gluePointIri = $diagramData.pointToGluePointMap.get(pointIri);
+
+            if (sharedGluePoint === null) {
+                sharedGluePoint = gluePointIri || null;
+            } else if (gluePointIri !== sharedGluePoint) {
+                allFromSameGluePoint = false;
+                break;
+            }
+        }
+
+        if (allFromSameGluePoint && sharedGluePoint !== null) {
+            return false; // All selected points are already in the same glue point
+        }
+
+        // Check if selected points belong to different objects
         const objectIris = new Set<string>();
 
         // Count distinct object IRIs
