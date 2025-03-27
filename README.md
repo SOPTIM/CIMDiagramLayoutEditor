@@ -14,6 +14,23 @@ A modern web application for editing CGMES (Common Grid Model Exchange Standard)
 - **Navigation Map**: Mini-map in corner for navigating large diagrams
 - **Responsive Design**: Adapts to different screen sizes and devices
 
+### Glue Point Support
+
+#### DiagramObjectGluePoint
+
+The CGMES DiagramLayout profile includes a class called `DiagramObjectGluePoint` that is used for grouping diagram object points from different diagram objects. These points are considered to be logically connected in a diagram even if they are not at the exact same coordinates.
+
+The editor now supports visualization and management of these glue points with the following features:
+
+- **Visualizing Connections**: Toggle the "Show Glue Points" checkbox to display dotted lines between connected points
+- **Creating Connections**: Select exactly two points from different objects to make the "Connected" checkbox appear, then check it to create a glue point connection
+- **Breaking Connections**: Select connected points and uncheck the "Connected" checkbox
+- **Moving Connected Points**: When dragging a point, all points connected to it via glue points will move together
+- **Copy/Paste with Connections**: Glue point relationships are preserved when copying and pasting objects
+- **Deletion Warnings**: The application warns when you attempt to delete objects that have glue point connections to other objects
+
+This feature is particularly useful for maintaining logical connections between electrical components while allowing flexibility in diagram layout.
+
 ## Diagram Layout Profile
 
 CGMES defines a diagram layout profile that represents the layout of a diagram in a power system model. The profile includes the following classes:

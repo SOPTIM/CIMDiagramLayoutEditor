@@ -27,7 +27,8 @@ export class DiagramQueryBuilder {
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         
-        SELECT ?diagramObject ?point ?xPosition ?yPosition ?sequenceNumber ?drawingOrder ?isPolygon ?isTextDiagramObject ?textContent
+        SELECT ?diagramObject ?point ?xPosition ?yPosition ?sequenceNumber ?drawingOrder 
+               ?isPolygon ?isTextDiagramObject ?textContent ?gluePoint
         WHERE { 
         
         ?diagramObject cim:DiagramObject.Diagram <${diagramIri}> . 
@@ -47,7 +48,6 @@ export class DiagramQueryBuilder {
         BIND(xsd:float(?x) AS ?xPosition) .
         BIND(xsd:float(?y) AS ?yPosition) .
     
-    
         OPTIONAL {
             ?point cim:DiagramObjectPoint.sequenceNumber ?seqNum .
         }
@@ -62,6 +62,11 @@ export class DiagramQueryBuilder {
             ?diagramObject cim:TextDiagramObject.text ?text .
         }
         BIND(IF(bound(?text), ?text, "") AS ?textContent) .
+        
+        # Get glue point references
+        OPTIONAL {
+            ?point cim:DiagramObjectPoint.DiagramObjectGluePoint ?gluePoint .
+        }
         }
         ORDER BY ?drawingOrder ?sequenceNumber
       `;

@@ -1,7 +1,7 @@
 /**
  * Svelte action to make elements resize with window
- * 
- * @param node - Element to make resizable
+ *
+ * @param _node - Element to make resizable
  * @param callback - Optional callback to execute on resize
  */
 export function resizable(_node: HTMLElement, callback?: () => void) {

@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { Point2D } from '../../core/models/types';
+import type { Point2D } from '@/core/models/types';
 
 // UI state
 export const isLoading = writable<boolean>(false);

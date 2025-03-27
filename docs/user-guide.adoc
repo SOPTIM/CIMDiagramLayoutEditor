@@ -288,6 +288,67 @@ The tooltip provides several interaction options:
 * Copy values to clipboard by selecting the text
 * Close the tooltip with the X button or kbd:[Esc] key
 
+== Working with Glue Points
+
+=== Understanding Glue Points
+
+Glue points are a CGMES concept that allows points from different diagram objects to be logically connected, even when they're not at the exact same coordinates. This is particularly useful for maintaining the logical structure of a power system diagram while allowing flexibility in its visual layout.
+
+[TIP]
+Think of glue points as "logical connectors" between components in the diagram. They ensure that connected components maintain their relationship even as you move them around.
+
+=== Visualizing Glue Points
+
+[cols="1,3"]
+|===
+|Action |Description
+
+|*Show Glue Points*
+|Toggle the "Show Glue Points" checkbox in the grid controls panel to display dotted blue lines between connected points
+
+|*Identify Connections*
+|When glue points are visible, connected points are linked by dotted blue lines, making it easy to see which components are logically connected
+|===
+
+=== Creating and Managing Connections
+
+[cols="1,3"]
+|===
+|Action |Description
+
+|*Create Connection*
+|Select exactly two points from different objects, then check the "Connected" checkbox that appears
+
+|*Remove Connection*
+|Select two connected points and uncheck the "Connected" checkbox
+
+|*Move Connected Points*
+|When dragging a point, all points connected to it via glue points will move together, maintaining their relative positions
+
+|*Delete Connected Objects*
+|When deleting objects with glue point connections to other objects, you will be prompted to confirm the operation, as it will break those connections
+|===
+
+=== Glue Points and Diagram Operations
+
+Glue point relationships are preserved during these operations:
+
+* *Dragging points*: Connected points move together
+* *Copying objects*: When you copy and paste objects, their glue point connections to other copied objects are preserved
+* *Rotation*: When rotating objects, their glue point connections are maintained
+
+[IMPORTANT]
+====
+When deleting an object that has glue point connections to objects that aren't being deleted, those connections will be broken. The application will warn you before proceeding.
+====
+
+=== Best Practices for Working with Glue Points
+
+* Use glue points to connect related components in power system diagrams
+* The "Show Glue Points" toggle helps visualize the logical structure of your diagram
+* When reorganizing a diagram, consider moving groups of connected objects together
+* Check for existing connections before deleting objects to avoid breaking logical relationships accidentally
+
 == Technical Details
 
 === SPARQL Integration

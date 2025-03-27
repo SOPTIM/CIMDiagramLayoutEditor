@@ -3,8 +3,9 @@ import type {
   ViewTransform, 
   Bounds, 
   DrawingPointConfig 
-} from '../core/models/types';
-import type { DiagramModel, DiagramObjectModel } from '../core/models/DiagramModel';
+} from '@/core/models/types';
+import type { DiagramModel } from '@/core/models/DiagramModel';
+import type { DiagramObjectModel } from '@/core/models/DiagramObjectModel';
 
 /**
  * Calculate the squared distance between two points

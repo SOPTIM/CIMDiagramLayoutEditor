@@ -1,7 +1,7 @@
 import type { 
   SparqlResults 
-} from '../core/models/types';
-import { SparqlOperationType } from '../core/models/types';
+} from '@/core/models/types';
+import { SparqlOperationType } from '@/core/models/types';
 import { 
   getSparqlUpdateEndpoint, 
   isValidEndpoint 
