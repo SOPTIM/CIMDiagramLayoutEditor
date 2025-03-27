@@ -44,7 +44,7 @@ import {
   hideTooltip,
 } from '../../tooltips/TooltipState';
 import type { DiagramObjectModel } from '@/core/models/DiagramObjectModel';
-import {showGluePoints} from "@/features/gluepoints/GluePointState";
+import {selectedGluePoint, showGluePoints} from "@/features/gluepoints/GluePointState";
 import type {DiagramModel} from "@/core/models/DiagramModel";
 
 // Services
@@ -148,7 +148,32 @@ export function canvasInteraction(canvas: HTMLCanvasElement) {
         rotateSelectedObjects(-90);
       }
     } else if (e.key === 'Delete') {
-      // Delete operation
+      // First check if a glue point is selected or if selected points are part of glue points
+      const hasSelectedGluePoint = get(selectedGluePoint) !== null;
+      if (hasSelectedGluePoint) {
+        // Handle via GluePointVisualizer component (it has its own DELETE handler)
+        return;
+      }
+
+      // Check if any selected points are part of glue points
+      const selectedPoints = Array.from(get(interactionState).selectedPoints);
+      if (selectedPoints.length > 0) {
+        const diagram = get(diagramData);
+        if (diagram) {
+          // Check if any point is part of a glue connection
+          const hasGluePoints = selectedPoints.some(pointIri =>
+              diagram.pointToGluePointMap.has(pointIri)
+          );
+
+          if (hasGluePoints) {
+            // Let the glue point service handle the delete operation
+            serviceRegistry.gluePointService.handleDeleteKeyOnGluePoint();
+            return;
+          }
+        }
+      }
+
+      // If no glue points are involved, proceed with regular delete operation
       deleteSelectedDiagramObjects();
     } else if (e.key === ' ') {
       // Space bar for temporary pan mode toggle

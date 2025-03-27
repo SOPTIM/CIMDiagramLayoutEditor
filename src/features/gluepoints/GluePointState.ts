@@ -4,77 +4,148 @@ import { diagramData } from '../diagram/DiagramState';
 
 // UI state for glue points
 export const showGluePoints = writable<boolean>(false);
+export const selectedGluePoint = writable<string | null>(null);
 
-// Helper to get all points that should be visualized with glue connections
-export function getVisibleGlueConnections(): Array<{ 
-  point1: string;
-  point2: string;
-  gluePointIri: string;
+// Helper to get all glue points to visualize
+export function getGluePointsForVisualization(): Array<{
+    iri: string;
+    center: {x: number, y: number};
+    connectedPoints: string[];
 }> {
-  const currentDiagram = get(diagramData);
-  if (!currentDiagram || !get(showGluePoints)) return [];
-  
-  const connections: Array<{
-    point1: string;
-    point2: string;
-    gluePointIri: string;
-  }> = [];
-  
-  // Process each glue point
-  currentDiagram.gluePoints.forEach(gluePoint => {
-    const pointIris = Array.from(gluePoint.connectedPoints);
-    
-    // For each pair of points in this glue point, create a connection
-    for (let i = 0; i < pointIris.length; i++) {
-      for (let j = i + 1; j < pointIris.length; j++) {
-        connections.push({
-          point1: pointIris[i],
-          point2: pointIris[j],
-          gluePointIri: gluePoint.iri
+    const currentDiagram = get(diagramData);
+    if (!currentDiagram || !get(showGluePoints)) return [];
+
+    const gluePointsInfo: Array<{
+        iri: string;
+        center: {x: number, y: number};
+        connectedPoints: string[];
+    }> = [];
+
+    // Process each glue point
+    currentDiagram.gluePoints.forEach(gluePoint => {
+        if (gluePoint.connectedPoints.size < 2) return;
+
+        // Calculate center point
+        let sumX = 0;
+        let sumY = 0;
+        let count = 0;
+        const connectedPointIds: string[] = [];
+
+        gluePoint.connectedPoints.forEach(pointIri => {
+            const point = currentDiagram.points.find(p => p.iri === pointIri);
+            if (point) {
+                sumX += point.x;
+                sumY += point.y;
+                count++;
+                connectedPointIds.push(pointIri);
+            }
         });
-      }
-    }
-  });
-  
-  return connections;
+
+        if (count < 2) return;
+
+        gluePointsInfo.push({
+            iri: gluePoint.iri,
+            center: { x: sumX / count, y: sumY / count },
+            connectedPoints: connectedPointIds
+        });
+    });
+
+    return gluePointsInfo;
 }
 
-// Helper to check if two points are connected by a glue point
-export function arePointsGlued(point1Iri: string, point2Iri: string): boolean {
-  const currentDiagram = get(diagramData);
-  if (!currentDiagram) return false;
-  
-  const gluePoint1 = currentDiagram.getGluePointForPoint(point1Iri);
-  const gluePoint2 = currentDiagram.getGluePointForPoint(point2Iri);
-  
-  return !!(gluePoint1 && gluePoint2 && gluePoint1.iri === gluePoint2.iri);
+// Helper to check if a point is part of a glue point
+export function isPointInGluePoint(pointIri: string): string | null {
+    const currentDiagram = get(diagramData);
+    if (!currentDiagram) return null;
+
+    return currentDiagram.pointToGluePointMap.get(pointIri) || null;
 }
 
 // Derived store to track if connection checkbox should be shown
-export const shouldShowGlueCheckbox  = derived(
-  [interactionState, diagramData],
-  ([$interactionState, $diagramData]) => {
-    // Show if exactly two points are selected and they belong to different objects
-    if (!$diagramData || $interactionState.selectedPoints.size !== 2) return false;
-    
-    const pointIris = Array.from($interactionState.selectedPoints);
-    const point1 = $diagramData.points.find(p => p.iri === pointIris[0]);
-    const point2 = $diagramData.points.find(p => p.iri === pointIris[1]);
-    
-    if (!point1 || !point2) return false;
-    
-    // Check if points belong to different objects
-    return point1.parentObject.iri !== point2.parentObject.iri;
-  }
+export const shouldShowGlueCheckbox = derived(
+    [interactionState, diagramData],
+    ([$interactionState, $diagramData]) => {
+        // Show if at least two points are selected
+        if (!$diagramData || $interactionState.selectedPoints.size < 2) return false;
+
+        const pointIris = Array.from($interactionState.selectedPoints);
+
+        // Don't show if points are already part of the same glue point
+        let sharedGluePoint: string | null = null;
+        let allFromSameGluePoint = true;
+
+        for (const pointIri of pointIris) {
+            const gluePointIri = $diagramData.pointToGluePointMap.get(pointIri);
+
+            if (sharedGluePoint === null) {
+                sharedGluePoint = gluePointIri || null;
+            } else if (gluePointIri !== sharedGluePoint) {
+                allFromSameGluePoint = false;
+                break;
+            }
+        }
+
+        if (allFromSameGluePoint && sharedGluePoint !== null) {
+            return false; // All selected points are already in the same glue point
+        }
+
+        // Check if selected points belong to different objects
+        const objectIris = new Set<string>();
+
+        // Count distinct object IRIs
+        for (const pointIri of pointIris) {
+            const point = $diagramData.points.find(p => p.iri === pointIri);
+            if (point && point.parentObject) {
+                objectIris.add(point.parentObject.iri);
+            }
+        }
+
+        // Only show if points are from at least two different objects
+        return objectIris.size >= 2;
+    }
 );
 
 // Derived store to track if the connection checkbox should be checked
-export const isGlueChecked  = derived(
-  [interactionState, diagramData],
-  ([$interactionState, $diagramData]) => {
-    if (!$diagramData || $interactionState.selectedPoints.size !== 2) return false;
-    
-    const pointIris = Array.from($interactionState.selectedPoints);
-    return arePointsGlued(pointIris[0], pointIris[1]);
-  }
+export const isGlueChecked = derived(
+    [interactionState, diagramData],
+    ([$interactionState, $diagramData]) => {
+        if (!$diagramData || $interactionState.selectedPoints.size < 2) return false;
+
+        const pointIris = Array.from($interactionState.selectedPoints);
+
+        // Check if all selected points share the same glue point
+        let sharedGluePoint: string | null = null;
+        let allConnected = true;
+
+        for (const pointIri of pointIris) {
+            const gluePointIri = $diagramData.pointToGluePointMap.get(pointIri);
+
+            if (!gluePointIri) {
+                allConnected = false;
+                break;
+            }
+
+            if (sharedGluePoint === null) {
+                sharedGluePoint = gluePointIri;
+            } else if (sharedGluePoint !== gluePointIri) {
+                allConnected = false;
+                break;
+            }
+        }
+
+        return allConnected && sharedGluePoint !== null;
+    }
+);
+
+// Determine which points are highlighted as part of a selected glue point
+export const highlightedGluePoints = derived(
+    [selectedGluePoint, diagramData],
+    ([$selectedGluePoint, $diagramData]) => {
+        if (!$selectedGluePoint || !$diagramData) return new Set<string>();
+
+        const gluePoint = $diagramData.gluePoints.find(gp => gp.iri === $selectedGluePoint);
+        if (!gluePoint) return new Set<string>();
+
+        return gluePoint.connectedPoints;
+    }
 );

@@ -1,7 +1,8 @@
 <script lang="ts">
-        import type { Point2D } from '../core/models/types';
     
     // Component properties
+    import type {Point2D} from "@/core/models/types";
+
     export let status: string = 'Ready';
     export let coordinates: Point2D = { x: 0, y: 0 };
   </script>

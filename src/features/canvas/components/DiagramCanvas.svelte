@@ -21,9 +21,9 @@
   import PointTooltip from '../../tooltips/components/PointTooltip.svelte';
   import type { MovePointsByDeltaData, Point2D } from '@/core/models/types';
   import type { PointModel } from '@/core/models/PointModel';
-  import { serviceRegistry } from '@/services/ServiceRegistry';  
-  import GluePointConnections from '../../gluepoints/components/GluePointConnections.svelte';
+  import { serviceRegistry } from '@/services/ServiceRegistry';
   import GlueCheckbox from '../../gluepoints/components/GlueCheckbox.svelte';
+  import GluePointVisualizer from "@/features/gluepoints/components/GluePointVisualizer.svelte";
   
   // Props
   export let showNavigationMap = true;
@@ -186,12 +186,10 @@
     onEnter={handleTooltipEnter}
     onLeave={handleTooltipLeave}>
   </PointTooltip>
-  
-  <!-- Glue point connections (dotted lines) -->
-  <GluePointConnections viewTransform={$viewTransform}></GluePointConnections>
 
   <!-- Connection checkbox for creating/removing glue points -->
   <GlueCheckbox viewTransform={$viewTransform}></GlueCheckbox>
+  <GluePointVisualizer viewTransform={$viewTransform}></GluePointVisualizer>
 
   <!-- Navigation map in the lower right corner -->
   <NavigationMap 
