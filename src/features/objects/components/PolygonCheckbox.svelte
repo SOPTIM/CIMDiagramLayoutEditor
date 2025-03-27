@@ -1,9 +1,9 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import type { Point2D, ViewTransform } from '../../../core/models/types';
+    import type { Point2D, ViewTransform } from '@/core/models/types';
     import type { DiagramObjectModel } from '../../../core/models/DiagramModel';
-    import { worldToScreen } from '../../../utils/geometry';
-    import { serviceRegistry } from '../../../services/ServiceRegistry';
+    import { worldToScreen } from '@/utils/geometry';
+    import { serviceRegistry } from '@/services/ServiceRegistry';
     
     // Props
     export let object: DiagramObjectModel;

@@ -7,17 +7,19 @@
   } from '../DiagramState';
   import { isLoading, updateStatus } from '../../ui/UIState';
   import { gridEnabled, gridSize } from '../../canvas/CanvasState';
-  import { CGMESVersion } from '../../../core/models/types';
-  import { AppConfig } from '../../../core/config/AppConfig';
-  import { serviceRegistry } from '../../../services/ServiceRegistry';
+  import { CGMESVersion } from '@/core/models/types';
+  import { AppConfig } from '@/core/config/AppConfig';
+  import { serviceRegistry } from '@/services/ServiceRegistry';
   import Button from '../../ui/base-components/Button.svelte';
   import Select from '../../ui/base-components/Select.svelte';
   import RadioGroup from '../../ui/base-components/RadioGroup.svelte';
   import Input from '../../ui/base-components/Input.svelte';
   import { showGluePoints } from '../../gluepoints/GluePointState';
+  import { interactionState } from '../../interaction/InteractionState';
   
   // Get service
   const diagramService = serviceRegistry.diagramService;
+  const objectService = serviceRegistry.objectService;
   
   // Props
   let { 
@@ -78,6 +80,25 @@
     // Just dispatch the current state - don't invert here
     // Let the parent component handle the state
     onToggleMap(showNavigationMap);
+  }
+
+  // Handle rotation button click
+  async function handleRotate(degrees: number) {
+    try {
+      // Check if any points are selected
+      const selectedPoints = $interactionState.selectedPoints;
+      if (selectedPoints.size === 0) {
+        updateStatus('No objects selected for rotation');
+        return;
+      }
+
+      const success = await objectService.rotateSelectedObjects(degrees);
+      if (success) {
+        updateStatus(`Rotated objects by ${degrees} degrees`);
+      }
+    } catch (error) {
+      updateStatus(`Error: ${error instanceof Error ? error.message : String(error)}`);
+    }
   }
 </script>
 
@@ -161,6 +182,21 @@
       Show Glue Points
     </label>
   </div>
+
+  <div class="rotation-controls">
+    <Button
+            id="rotate-ccw"
+            label="-90°"
+            on:click={() => handleRotate(-90)}
+            disabled={loading}>
+    </Button>
+    <Button
+            id="rotate-cw"
+            label="+90°"
+            on:click={() => handleRotate(90)}
+            disabled={loading}>
+    </Button>
+  </div>
 </div>
 
 
@@ -236,5 +272,16 @@
     font-style: italic;
     color: #666;
     white-space: nowrap;
+  }
+
+  .rotation-controls {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-left: auto;
+    align-items: center;
+  }
+
+  .rotation-controls button {
+    min-width: 60px;
   }
 </style>

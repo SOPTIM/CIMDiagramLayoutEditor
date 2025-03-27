@@ -15,12 +15,12 @@
   import { diagramData } from '../../diagram/DiagramState';
   import { canvasInteraction } from '../../interaction/actions/canvasInteraction';
   import { resizable } from '../../interaction/actions/resizable';
-  import { resizeCanvas } from '../../../utils/canvas';
+  import { resizeCanvas } from '@/utils/canvas';
   import NavigationMap from '../../navigation/components/NavigationMap.svelte';
   import PolygonCheckbox from '../../objects/components/PolygonCheckbox.svelte';
   import PointTooltip from '../../tooltips/components/PointTooltip.svelte';
-  import type { MovePointsByDeltaData, Point2D } from '../../../core/models/types';
-  import type { PointModel } from '../../../core/models/PointModel';
+  import type { MovePointsByDeltaData, Point2D } from '@/core/models/types';
+  import type { PointModel } from '@/core/models/PointModel';
   import { serviceRegistry } from '@/services/ServiceRegistry';  
   import GluePointConnections from '../../gluepoints/components/GluePointConnections.svelte';
   import ConnectionCheckbox from '../../gluepoints/components/ConnectionCheckbox.svelte';

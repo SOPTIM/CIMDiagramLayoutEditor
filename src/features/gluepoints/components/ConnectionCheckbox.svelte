@@ -1,10 +1,10 @@
 <script lang="ts">
-    import type { Point2D, ViewTransform } from '../../../core/models/types';
-    import { worldToScreen } from '../../../utils/geometry';
+    import type { Point2D, ViewTransform } from '@/core/models/types';
+    import { worldToScreen } from '@/utils/geometry';
     import { interactionState } from '../../interaction/InteractionState';
     import { shouldShowConnectionCheckbox, isConnectionChecked } from '../GluePointState';
     import { diagramData } from '../../diagram/DiagramState';
-    import { serviceRegistry } from '../../../services/ServiceRegistry';
+    import { serviceRegistry } from '@/services/ServiceRegistry';
     
     // Props
     const { viewTransform } = $props<{ viewTransform: ViewTransform }>();

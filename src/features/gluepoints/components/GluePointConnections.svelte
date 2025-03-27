@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { ViewTransform } from '../../../core/models/types';
-  import { worldToScreen } from '../../../utils/geometry';
+  import type { ViewTransform } from '@/core/models/types';
+  import { worldToScreen } from '@/utils/geometry';
   import { diagramData } from '../../diagram/DiagramState';
   import { showGluePoints, getVisibleGlueConnections } from '../GluePointState';
   
