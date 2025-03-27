@@ -280,8 +280,4 @@
     margin-left: auto;
     align-items: center;
   }
-
-  .rotation-controls button {
-    min-width: 60px;
-  }
 </style>
