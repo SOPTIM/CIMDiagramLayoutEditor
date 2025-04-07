@@ -8,6 +8,7 @@ import type { DiagramService } from '@/features/diagram/DiagramService';
 import { diagramData, cimNamespace } from '../diagram/DiagramState';
 import { setLoading, updateStatus } from '../ui/UIState';
 import type { GluePointQueryBuilder } from '@/queries/GluePointQueryBuilder ';
+import { selectedGluePoint } from './GluePointState';
 import { interactionState, clearSelection, togglePointSelection } from '../interaction/InteractionState';
 
 export class GluePointService {
@@ -153,6 +154,9 @@ export class GluePointService {
       // Update the UI state
       diagramData.set(currentDiagram);
 
+       // Set the newly created glue point as selected
+      selectedGluePoint.set(gluePointIri);
+      
       updateStatus('Glue point created successfully');
       return gluePoint;
 
