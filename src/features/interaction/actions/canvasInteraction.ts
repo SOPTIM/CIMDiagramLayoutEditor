@@ -149,33 +149,28 @@ export function canvasInteraction(canvas: HTMLCanvasElement) {
         rotateSelectedObjects(-90);
       }
     } else if (e.key === 'Delete') {
-      // First check if a glue point is selected or if selected points are part of glue points
-      const hasSelectedGluePoint = get(selectedGluePoint) !== null;
-      if (hasSelectedGluePoint) {
-        // Handle via GluePointVisualizer component (it has its own DELETE handler)
-        return;
+      // First, check if a glue point marker itself is selected
+      const isGluePointMarkerSelected = get(selectedGluePoint) !== null;
+
+      if (isGluePointMarkerSelected) {
+        // If a glue marker is explicitly selected, delegate to glue point deletion
+        // (This assumes GluePointVisualizer or similar sets selectedGluePoint on marker click)
+        serviceRegistry.gluePointService.handleDeleteKeyOnGluePoint();
+        return; // Stop further processing
       }
 
-      // Check if any selected points are part of glue points
-      const selectedPoints = Array.from(get(interactionState).selectedPoints);
-      if (selectedPoints.length > 0) {
-        const diagram = get(diagramData);
-        if (diagram) {
-          // Check if any point is part of a glue connection
-          const hasGluePoints = selectedPoints.some(pointIri =>
-              diagram.pointToGluePointMap.has(pointIri)
-          );
+      // If no glue point marker is selected, proceed to check if points are selected
+      // for potential object deletion. The broad check for any associated glue point
+      // via pointToGluePointMap is removed here, as object deletion should handle
+      // cleaning up associated points and potentially orphaned glue points via SPARQL.
+      const selectedPointsExist = get(interactionState).selectedPoints.size > 0;
 
-          if (hasGluePoints) {
-            // Let the glue point service handle the delete operation
-            serviceRegistry.gluePointService.handleDeleteKeyOnGluePoint();
-            return;
-          }
-        }
+      if (selectedPointsExist) {
+        // If points are selected (but not a glue marker), trigger object deletion
+        deleteSelectedDiagramObjects();
       }
-
-      // If no glue points are involved, proceed with regular delete operation
-      deleteSelectedDiagramObjects();
+      // If neither a glue marker nor points are selected, do nothing on Delete.
+      return;
     } else if (e.key === ' ') {
       // Space bar for temporary pan mode toggle
       e.preventDefault();
