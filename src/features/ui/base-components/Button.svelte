@@ -4,13 +4,15 @@
     export let type: 'button' | 'submit' | 'reset' = 'button';
     export let disabled: boolean = false;
     export let primary: boolean = true;
-  </script>
+    export let tooltip: string | undefined = undefined;
+</script>
   
   <button 
     {id} 
-    {type} 
+    {type}
     {disabled} 
-    class:primary 
+    class:primary
+    title={tooltip}
     on:click
   >
     {label}

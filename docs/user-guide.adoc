@@ -180,6 +180,12 @@ The navigation map is especially useful for very large diagrams where it's easy 
 
 |*-90° Button*
 |Rotate selected objects 90 degrees counter-clockwise
+
+|*↔ Button*
+|Mirror selected objects horizontally across the center of selection
+
+|*↕ Button*
+|Mirror selected objects vertically across the center of selection
 |===
 
 === Grid Snapping Controls

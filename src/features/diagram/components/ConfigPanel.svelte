@@ -100,6 +100,44 @@
       updateStatus(`Error: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
+
+  // Handle mirror horizontally button click
+  async function handleMirrorHorizontally() {
+    try {
+      // Check if any points are selected
+      const selectedPoints = $interactionState.selectedPoints;
+      if (selectedPoints.size === 0) {
+        updateStatus('No objects selected for mirroring');
+        return;
+      }
+
+      const success = await objectService.mirrorSelectedObjectsHorizontally();
+      if (success) {
+        updateStatus(`Mirrored objects horizontally`);
+      }
+    } catch (error) {
+      updateStatus(`Error: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  // Handle mirror vertically button click
+  async function handleMirrorVertically() {
+    try {
+      // Check if any points are selected
+      const selectedPoints = $interactionState.selectedPoints;
+      if (selectedPoints.size === 0) {
+        updateStatus('No objects selected for mirroring');
+        return;
+      }
+
+      const success = await objectService.mirrorSelectedObjectsVertically();
+      if (success) {
+        updateStatus(`Mirrored objects vertically`);
+      }
+    } catch (error) {
+      updateStatus(`Error: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
 </script>
 
 <div class="config-panel">
@@ -187,13 +225,29 @@
     <Button
             id="rotate-ccw"
             label="-90°"
+            tooltip="Rotate 90° counter-clockwise"
             on:click={() => handleRotate(-90)}
             disabled={loading}>
     </Button>
     <Button
             id="rotate-cw"
             label="+90°"
+            tooltip="Rotate 90° clockwise"
             on:click={() => handleRotate(90)}
+            disabled={loading}>
+    </Button>
+    <Button
+            id="mirror-h"
+            label="↔"
+            tooltip="Mirror horizontally"
+            on:click={handleMirrorHorizontally}
+            disabled={loading}>
+    </Button>
+    <Button
+            id="mirror-v"
+            label="↕"
+            tooltip="Mirror vertically"
+            on:click={handleMirrorVertically}
             disabled={loading}>
     </Button>
   </div>
