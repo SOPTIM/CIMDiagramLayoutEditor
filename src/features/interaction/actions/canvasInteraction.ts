@@ -84,7 +84,8 @@ export function canvasInteraction(canvas: HTMLCanvasElement) {
     
     // If Escape is pressed and no tooltip is showing, clear selection
     if (e.key === 'Escape') {
-      clearSelection();
+      clearSelection();      
+      selectedGluePoint.set(null); // Clear selected glue point if any
       return;
     }
     
@@ -645,12 +646,22 @@ export function canvasInteraction(canvas: HTMLCanvasElement) {
         if (!anyPoint) {
           // Clicked on empty space, clear selection
           clearSelection();
+          if (get(selectedGluePoint) !== null) { // Clear selected glue point if any
+            selectedGluePoint.set(null); 
+          }
         }        
         // Start panning
         startPanning({ x: screenX, y: screenY });
       }
     } else {
-      // No points selected, start panning
+      // No points selected
+
+      // If a glue point is selected, deselect it when clicking elsewhere
+      if (get(selectedGluePoint) !== null) {
+        selectedGluePoint.set(null);
+      }
+
+      // // start panning
       startPanning({ x: screenX, y: screenY });
     }
   }
