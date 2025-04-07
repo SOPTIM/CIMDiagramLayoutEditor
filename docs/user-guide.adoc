@@ -118,6 +118,12 @@ You can permanently toggle the snap-to-grid behavior using the checkbox in the G
 
 |*Rotate Counter-clockwise*
 |Select points and click the -90° button in the control panel to rotate 90° counter-clockwise
+
+|*Mirror Horizontally*
+|Select points and click the ↔ button in the control panel to mirror horizontally across the center of selection
+
+|*Mirror Vertically*
+|Select points and click the ↕ button in the control panel to mirror vertically across the center of selection
 |===
 
 == Navigation Map
@@ -180,6 +186,12 @@ The navigation map is especially useful for very large diagrams where it's easy 
 
 |*-90° Button*
 |Rotate selected objects 90 degrees counter-clockwise
+
+|*↔ Button*
+|Mirror selected objects horizontally across the center of selection
+
+|*↕ Button*
+|Mirror selected objects vertically across the center of selection
 |===
 
 === Grid Snapping Controls

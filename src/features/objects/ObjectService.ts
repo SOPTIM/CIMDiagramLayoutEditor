@@ -419,15 +419,19 @@ export class ObjectService {
       setLoading(false);
     }
   }
-  
+
   validateSelectedObjectsForRotation() {
+    return this.validateSelectedObjectsForTransformation('rotate');
+  }
+
+  validateSelectedObjectsForTransformation(operation: string = 'transform') {
     const currentState = get(interactionState);
     const currentDiagram = get(diagramData);
-    
+
     if (!currentDiagram || currentState.selectedPoints.size === 0) {
-      return { objectIris: new Set<string>(), validationError: 'Nothing selected to rotate' };
+      return { objectIris: new Set<string>(), validationError: `Nothing selected to ${operation}` };
     }
-    
+
     // Find parent objects
     const objectIris = new Set<string>();
     currentState.selectedPoints.forEach(pointIri => {
@@ -436,11 +440,11 @@ export class ObjectService {
         objectIris.add(point.parentObject.iri);
       }
     });
-    
+
     if (objectIris.size === 0) {
-      return { objectIris, validationError: 'No objects to rotate' };
+      return { objectIris, validationError: `No objects to ${operation}` };
     }
-    
+
     return { objectIris, validationError: null };
   }
   
@@ -480,6 +484,56 @@ export class ObjectService {
     });
     
     return pointsToRotate;
+  }
+
+  calculateHorizontallyMirroredPositions(objectIris: Set<string>, center: Point2D)
+      : { point: any; newX: number; newY: number }[] {
+    const currentDiagram = get(diagramData);
+    if (!currentDiagram) {
+      console.error('No diagram data found');
+      return [];
+    }
+
+    const pointsToMirror: { point: any; newX: number; newY: number }[] = [];
+
+    currentDiagram.points.forEach(point => {
+      if (point.parentObject && objectIris.has(point.parentObject.iri)) {
+        // Apply horizontal mirroring
+        // For horizontal mirroring, we reflect across the vertical axis passing through the center
+        // Formula: newX = 2 * center.x - point.x
+        const newX = 2 * center.x - point.x;
+        const newY = point.y; // Y coordinate stays the same for horizontal mirroring
+
+        pointsToMirror.push({ point, newX, newY });
+      }
+    });
+
+    return pointsToMirror;
+  }
+
+  calculateVerticallyMirroredPositions(objectIris: Set<string>, center: Point2D)
+      : { point: any; newX: number; newY: number }[] {
+    const currentDiagram = get(diagramData);
+    if (!currentDiagram) {
+      console.error('No diagram data found');
+      return [];
+    }
+
+    const pointsToMirror: { point: any; newX: number; newY: number }[] = [];
+
+    currentDiagram.points.forEach(point => {
+      if (point.parentObject && objectIris.has(point.parentObject.iri)) {
+        // Apply vertical mirroring
+        // For vertical mirroring, we reflect across the horizontal axis passing through the center
+        // Formula: newY = 2 * center.y - point.y
+        const newX = point.x; // X coordinate stays the same for vertical mirroring
+        const newY = 2 * center.y - point.y;
+
+        pointsToMirror.push({ point, newX, newY });
+      }
+    });
+
+    return pointsToMirror;
   }
   
   updateLocalPointPositions(pointsToRotate: { point: any; newX: number; newY: number }[]) {
@@ -747,5 +801,99 @@ export class ObjectService {
       console.error('Error in cloneObjectsWithOffset:', error);
       throw error;
     }
-  } 
+  }
+
+  /**
+   * Mirror selected objects horizontally around the center of selection
+   */
+  async mirrorSelectedObjectsHorizontally(): Promise<boolean> {
+    const { objectIris, validationError } = this.validateSelectedObjectsForTransformation();
+
+    if (validationError) {
+      updateStatus(validationError);
+      return false;
+    }
+
+    // Ensure all points of these objects are selected
+    this.selectAllPointsOfObjects(objectIris);
+
+    // Calculate the center of the selection
+    const center = this.calculateRotationCenter(objectIris);
+
+    // Start operation
+    setLoading(true);
+    updateStatus(`Mirroring ${objectIris.size} diagram objects horizontally...`);
+
+    try {
+      // Calculate new positions
+      const pointsToMirror = this.calculateHorizontallyMirroredPositions(objectIris, center);
+
+      // Update local model first
+      this.updateLocalPointPositions(pointsToMirror);
+
+      // Prepare data for SPARQL update
+      const updateData = this.preparePositionUpdateData(pointsToMirror);
+
+      // Send update to server
+      await this.updatePointPositionsInSparql(updateData);
+
+      updateStatus(`Mirrored ${objectIris.size} diagram objects horizontally`);
+      return true;
+    } catch (error) {
+      console.error('Error mirroring objects horizontally:', error);
+      updateStatus(`Error: ${error instanceof Error ? error.message : String(error)}`);
+
+      await this.diagramService.reloadDiagram();
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  /**
+   * Mirror selected objects vertically around the center of selection
+   */
+  async mirrorSelectedObjectsVertically(): Promise<boolean> {
+    const { objectIris, validationError } = this.validateSelectedObjectsForTransformation();
+
+    if (validationError) {
+      updateStatus(validationError);
+      return false;
+    }
+
+    // Ensure all points of these objects are selected
+    this.selectAllPointsOfObjects(objectIris);
+
+    // Calculate the center of the selection
+    const center = this.calculateRotationCenter(objectIris);
+
+    // Start operation
+    setLoading(true);
+    updateStatus(`Mirroring ${objectIris.size} diagram objects vertically...`);
+
+    try {
+      // Calculate new positions
+      const pointsToMirror = this.calculateVerticallyMirroredPositions(objectIris, center);
+
+      // Update local model first
+      this.updateLocalPointPositions(pointsToMirror);
+
+      // Prepare data for SPARQL update
+      const updateData = this.preparePositionUpdateData(pointsToMirror);
+
+      // Send update to server
+      await this.updatePointPositionsInSparql(updateData);
+
+      updateStatus(`Mirrored ${objectIris.size} diagram objects vertically`);
+      return true;
+    } catch (error) {
+      console.error('Error mirroring objects vertically:', error);
+      updateStatus(`Error: ${error instanceof Error ? error.message : String(error)}`);
+
+      await this.diagramService.reloadDiagram();
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }
 }
