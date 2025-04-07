@@ -7,7 +7,7 @@ import type { DiagramService } from '@/features/diagram/DiagramService';
 // Import state from feature modules
 import { diagramData, cimNamespace } from '../diagram/DiagramState';
 import { setLoading, updateStatus } from '../ui/UIState';
-import type { GluePointQueryBuilder } from '@/queries/GluePointQueryBuilder ';
+import type { GluePointQueryBuilder } from '@/queries/GluePointQueryBuilder';
 import { selectedGluePoint } from './GluePointState';
 import { interactionState, clearSelection, togglePointSelection } from '../interaction/InteractionState';
 

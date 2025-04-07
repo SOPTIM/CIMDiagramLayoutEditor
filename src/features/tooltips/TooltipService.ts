@@ -6,6 +6,32 @@ import { TooltipQueryBuilder } from '@/queries/TooltipQueryBuilder';
 // Import state from feature modules
 import { cimNamespace } from '../diagram/DiagramState';
 
+export interface DiagramObjectDetails {
+  iri: string;
+  name: string;
+  rotation: number | null;
+  offsetX: number | null;
+  offsetY: number | null;
+  style: {
+    iri: string;
+    name: string;
+  } | null;
+}
+
+export interface PointDetails {
+  iri: string;
+  name: string;
+  sequenceNumber: number;
+  x: number;
+  y: number;
+  z: number | null;
+}
+
+export interface PointDetailsResponse {
+  diagramObject: DiagramObjectDetails;
+  point: PointDetails;
+}
+
 export class TooltipService {
   constructor(
     private sparqlService: SparqlService,
@@ -15,7 +41,7 @@ export class TooltipService {
   /**
    * Load point data for tooltip display
    */
-  async loadPointDetails(point: PointModel): Promise<any> {
+  async loadPointDetails(point: PointModel): Promise<PointDetailsResponse | null> {
     if (!point) return null;
     
     try {

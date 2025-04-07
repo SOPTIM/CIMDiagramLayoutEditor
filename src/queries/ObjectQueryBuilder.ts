@@ -57,31 +57,4 @@ export class ObjectQueryBuilder {
         }
       `;
     }
-
-    
-
-    /**
-     * Build a query to update the cim:DiagramObject.isPolygon property
-     */
-    buildUpdateDiagramObjectIsPolygonQuery(
-      objectIri: string,
-      isPolygon: boolean,
-      cimNamespace: string
-    ): string {
-      return `
-        PREFIX cim: <${cimNamespace}>
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-        
-        DELETE {
-          <${objectIri}> cim:DiagramObject.isPolygon ?oldIsPolygon .
-        }
-        INSERT {
-          <${objectIri}> cim:DiagramObject.isPolygon "${isPolygon}"^^xsd:boolean .
-        }
-        WHERE {
-          OPTIONAL { <${objectIri}> cim:DiagramObject.isPolygon ?oldIsPolygon . }
-        }
-      `;
-    }
   }

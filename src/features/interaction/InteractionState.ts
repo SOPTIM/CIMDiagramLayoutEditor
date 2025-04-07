@@ -353,11 +353,3 @@ export function endPanning(): void {
     panStart: null
   }));
 }
-
-export const tempPanState = writable<{
-  previousMode: InteractionMode,
-  enabled: boolean
-}>({
-  previousMode: InteractionMode.NONE,
-  enabled: false
-});

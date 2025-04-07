@@ -9,7 +9,7 @@ import { PointService } from '@/features/points/PointService';
 import { ObjectService } from '@/features/objects/ObjectService';
 import { TooltipService } from '@/features/tooltips/TooltipService';
 import { AppConfig } from '@/core/config/AppConfig';
-import { GluePointQueryBuilder } from '@/queries/GluePointQueryBuilder ';
+import { GluePointQueryBuilder } from '@/queries/GluePointQueryBuilder';
 import { GluePointService } from '@/features/gluepoints/GluePointService';
 
 /**
