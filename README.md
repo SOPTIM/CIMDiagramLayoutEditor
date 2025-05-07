@@ -136,10 +136,11 @@ The application connects to a SPARQL endpoint containing CGMES diagram data and 
 
 The editor follows a clean architecture with clear separation of concerns:
 
-- **Models**: Define diagram data structures (DiagramModel, PointModel)
-- **Services**: Handle application state, SPARQL communication, and canvas rendering
-- **Components**: Render the UI and handle user interactions
-- **Utils**: Provide utility functions for geometry, SPARQL, and canvas operations
+- **Core**: Core models, types, and configuration
+- **Features**: Feature-based modules (canvas, diagram, interaction, etc.)
+- **Services**: Handle SPARQL communication and application services
+- **Queries**: SPARQL query builders for different operations
+- **Utils**: Utility functions for geometry, canvas operations, etc.
 
 ### Navigation Map
 
@@ -231,15 +232,25 @@ cgmes-editor-svelte/
 ├── scripts/                  # Build scripts
 │   └── build-docs.js         # Script to convert AsciiDoc to HTML
 ├── src/                      # Source code
-│   ├── components/           # UI Components
-│   │   ├── Help.svelte       # Help component for documentation
-│   │   ├── NavigationMap.svelte # Map component for diagram navigation
-│   │   ├── ui/               # Reusable UI components
-│   ├── models/               # Data models
+│   ├── core/                 # Core models and configuration
+│   │   ├── config/           # Application configuration
+│   │   └── models/           # Core data models
+│   ├── features/             # Feature modules
+│   │   ├── canvas/           # Canvas rendering and state
+│   │   ├── diagram/          # Diagram loading and state
+│   │   ├── gluepoints/       # Glue point functionality
+│   │   ├── help/             # Help documentation component
+│   │   ├── interaction/      # User interaction handling
+│   │   ├── navigation/       # Navigation map component
+│   │   ├── objects/          # Diagram object operations
+│   │   ├── points/           # Point operations 
+│   │   ├── tooltips/         # Tooltip functionality
+│   │   └── ui/               # UI components and state
+│   ├── queries/              # SPARQL query builders
 │   ├── services/             # Application services
-│   ├── utils/                # Utility functions
-│   ├── actions/              # Svelte actions
-│   └── styles/               # CSS styles
+│   │   └── utils/            # Service utilities
+│   ├── styles/               # CSS styles
+│   └── utils/                # Utility functions
 └── tests/                    # Tests
 ```
 
