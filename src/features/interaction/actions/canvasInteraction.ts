@@ -139,14 +139,6 @@ export function canvasInteraction(canvas: HTMLCanvasElement) {
       } else if (e.key === 'v') {
         // Paste operation
         pasteDiagramObjects(currentMouseWorldPos);
-      } else if (e.key === 'ArrowRight') {
-        // Rotate 90 degrees clockwise
-        e.preventDefault(); 
-        rotateSelectedObjects(90);
-      } else if (e.key === 'ArrowLeft') {
-        // Rotate 90 degrees counter-clockwise
-        e.preventDefault();
-        rotateSelectedObjects(-90);
       }
     } else if (e.key === 'Delete') {
       // First, check if a glue point marker itself is selected
@@ -752,13 +744,6 @@ export function canvasInteraction(canvas: HTMLCanvasElement) {
    */
   function deleteSelectedDiagramObjects() {
     objectService.deleteSelectedDiagramObjects();
-  }
-
-  /**
-   * Rotate selected objects around the center of selection
-   */
-  function rotateSelectedObjects(degrees: number) {
-    objectService.rotateSelectedObjects(degrees);
   }
 
   function findClosestGlueConnection(worldPos: Point2D, diagram: DiagramModel, threshold: number): {point1: string, point2: string} | null {

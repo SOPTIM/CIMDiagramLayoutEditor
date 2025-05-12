@@ -181,18 +181,85 @@ The navigation map is especially useful for very large diagrams where it's easy 
 |*Show Glue Connections*
 |Toggle to display dotted lines between glued points
 
-|*+90° Button*
-|Rotate selected objects 90 degrees clockwise
-
-|*-90° Button*
-|Rotate selected objects 90 degrees counter-clockwise
-
-|*↔ Button*
-|Mirror selected objects horizontally across the center of selection
-
-|*↕ Button*
-|Mirror selected objects vertically across the center of selection
 |===
+
+=== Transformation Operations
+
+==== Point-Based Transformations
+
+The CGMES DiagramLayout Editor uses a point-based approach for rotation and mirroring operations. This provides granular control over your diagram edits.
+
+[cols="1,3"]
+|===
+|Action |Description
+
+|*Rotate Selected Points*
+|Click the +90° or -90° buttons to rotate the currently selected points. The rotation center is calculated as the geometric center of all selected points.
+
+|*Mirror Selected Points*
+|Click the ↔ or ↕ buttons to mirror the currently selected points horizontally or vertically. The mirror axis passes through the geometric center of the selected points.
+
+|*Transform Entire Objects*
+|To rotate or mirror entire objects, first select all points of those objects. You can use Ctrl+C to copy objects (which selects all their points) or manually select all points of the objects you want to transform.
+
+|===
+
+==== Working with Point-Based Transformations
+
+The point-based transformation system provides several advantages:
+
+* **Granular Control**: You can transform only part of an object by selecting specific points
+* **Partial Transformations**: Create complex modifications by transforming different parts of objects independently
+* **Precise Selection**: Use Ctrl+Click to select individual points or Ctrl+Drag to select multiple points
+* **Flexible Workflow**: Mix partial and complete transformations as needed
+
+===== Selection Strategies
+
+[cols="1,3"]
+|===
+|Method |Description
+
+|*Ctrl+Click*
+|Select individual points one at a time
+
+|*Ctrl+Drag*
+|Create a selection rectangle to select multiple points at once
+
+|*Ctrl+C*
+|Copy objects (which selects all their points)
+
+|*Ctrl+C then Ctrl+V*
+|Copy objects (which selects all their points) and use for transformation
+
+|*Ctrl+A*
+|Select all points in the diagram
+
+|===
+
+[NOTE]
+====
+Remember that transformations affect only the selected points. If you're used to object-based transformations from other tools, take care to select all points of objects you want to transform completely.
+====
+
+[TIP]
+====
+To quickly select all points of an object, select any point of that object and press Ctrl+C to copy. This automatically selects all points of the parent object.
+====
+
+
+
+==== Best Practices
+
+* **Visual Feedback**: Selected points are highlighted in red to show what will be transformed
+* **Plan Your Selection**: Think about which points you want to transform before applying operations
+* **Use the Grid**: Enable grid snapping to align transformed points precisely
+* **Preview Selection**: Check your selection before transforming - the status bar shows how many points are selected
+* **Mix Techniques**: Combine different selection methods for complex transformations
+
+[WARNING]
+====
+Transformations cannot be undone automatically. Always check your selection before applying transformations, especially on complex diagrams.
+====
 
 === Grid Snapping Controls
 

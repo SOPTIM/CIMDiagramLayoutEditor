@@ -25,6 +25,33 @@ The application was largely generated using artificial intelligence, primarily u
 - **Navigation Map**: Mini-map in corner for navigating large diagrams
 - **Responsive Design**: Adapts to different screen sizes and devices
 
+### Transformation Operations
+
+#### Point-Based Transformations
+
+The CGMES DiagramLayout Editor uses point-based transformation operations for rotation and mirroring. This means:
+
+- **Direct Point Control**: Rotations and mirroring operations work directly on the selected points
+- **Granular Control**: You can transform partial objects by selecting only some of their points
+- **No Automatic Expansion**: Selecting a point doesn't automatically select all points of its parent object
+
+#### Working with Transformations
+
+1. **Select Points**: Use Ctrl+Click or Ctrl+Drag to select the points you want to transform
+2. **Transform**: Click the rotation (+90°/-90°) or mirroring (↔/↕) buttons
+3. **Whole Objects**: To transform entire objects, first select all their points using:
+  - Ctrl+Drag to create a selection rectangle
+  - Ctrl+C to copy objects (which selects all their points)
+
+### Navigation Map
+
+The editor features a navigation map in the lower right corner that:
+
+- Shows a miniature view of the entire diagram
+- Highlights the currently visible portion of the diagram
+- Allows quick navigation by clicking or dragging within the map
+- Helps maintain context when working with large diagrams
+
 ### Glue Point Support
 
 #### DiagramObjectGluePoint
@@ -151,15 +178,6 @@ The editor follows a clean architecture with clear separation of concerns:
 - **Services**: Handle SPARQL communication and application services
 - **Queries**: SPARQL query builders for different operations
 - **Utils**: Utility functions for geometry, canvas operations, etc.
-
-### Navigation Map
-
-The editor features a navigation map in the lower right corner that:
-
-- Shows a miniature view of the entire diagram
-- Highlights the currently visible portion of the diagram
-- Allows quick navigation by clicking or dragging within the map
-- Helps maintain context when working with large diagrams
 
 ### SPARQL Implementation
 
