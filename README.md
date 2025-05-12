@@ -5,6 +5,16 @@ This tool allows power system engineers and grid operators to visualize and modi
 
 ![Screenshot](./images/screenshot.png)
 
+## Disclaimer
+
+This project was developed as an internal proof-of-concept and should not be used in production environments.
+
+The goal was to explore and understand the best ways to interact with and edit "Diagram Layout Profile" data. Among other objectives, this included determining optimal implementations for mouse and keyboard controls.
+
+The project also serves as a demonstrator for several key features, including the selection, rotation, and mirroring of elements from the Diagram Layout Profile.
+
+The application was largely generated using artificial intelligence, primarily utilizing Anthropic Claude 3.7 Sonnet.
+
 ## Features
 
 - **SPARQL Integration**: View and edit diagram layouts directly from SPARQL endpoints
@@ -255,6 +265,10 @@ cgmes-editor-svelte/
 ```
 
 ## Testing
+
+As a proof-of-concept, this project currently includes no automated tests. 
+
+If there were some, they would run using:
 
 ```bash
 npm run test
